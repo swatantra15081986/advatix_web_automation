@@ -1,0 +1,6 @@
+{
+    "env": {
+        "env_acs2": "cypress/env/acs2/staging.json"
+    }
+  }
+

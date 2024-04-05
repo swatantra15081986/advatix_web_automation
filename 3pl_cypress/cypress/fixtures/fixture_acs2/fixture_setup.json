@@ -1,0 +1,14 @@
+{
+    "setup_url": ["/login", "/orders/viewAllOrders", "/warehouselocations/manage-locations"],
+    "fc_setup": {
+        "country": "India",
+        "state": "Delhi",
+        "city": "New Delhi",
+        "address": " Sector 4, Gurgaon",
+        "postal_code": "122001",
+        "e_mail": "swatantra.srivastava@advatix.com",
+        "mobile": "7042773602"
+
+      }
+    } 
+  

@@ -1,0 +1,165 @@
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+def jenkinsUrl = env.JENKINS_URL
+def jobUrl = env.JOB_URL
+def jobName = env.JOB_NAME
+println "jenkinsUrl: ${jenkinsUrl}"
+println "jobUrl: ${jobUrl}"
+println "jobName: ${jobName}"
+def jobDescription = jobUrl
+def channel_id = "C029L6QSPFW"
+def startTime = System.currentTimeMillis()
+def buildUserId = "Autoscheduler"
+currentBuild.rawBuild.getCauses().each {
+  cause ->
+    if (cause.class.toString().contains("UserIdCause")) {
+      buildUserId = cause.getUserId().split("@")[0]
+    }
+}
+def slackUserId = "<@${buildUserId}>"
+def buildUserId_qa = "US01KQB5X" //parul
+def slackUserId_qa = "<@${buildUserId_qa}>" // parul
+def buildUserId_qa2 = "UFQD83WJX" //ritika
+def slackUserId_qa2 = "<@${buildUserId_qa2}>" // ritika
+def buildUserId_lead_ondemand1 = "UFV9NPGBU" //Prasann Sethi
+def slackUserId_lead_ondemand1 = "<@${buildUserId_lead_ondemand1}>" //Prasann Sethi
+def buildUserId_lead_ondemand2 = "US1K17G3B" //Garima
+def slackUserId_lead_ondemand2 = "<@${buildUserId_lead_ondemand2}>" //Garima
+def buildUserId_director = "U6B48LGUB" // pradex
+def slackUserId_director = "<@${buildUserId_director}>" //pradex
+pipeline {
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+    ansiColor('xterm')
+
+  }
+  agent any
+  tools {
+    nodejs "node"
+  }
+
+  stages {
+    stage('FRONTEND AUTOMATION CASES') {
+
+      steps {
+        sh "pwd"
+        dir('3PL_Cypress') {
+          sh "pwd"
+          sh "pip3 freeze > requirements.txt"
+          sh "pip3 install -r requirements.txt"
+          sh 'npm i'
+          sh 'node create-cucumber-json.js'
+          sh 'node delete-video.js'
+          sh 'node delete-report.js'
+          sh 'node create-report.js'
+          script {
+            try {
+              sh 'npm run "$Script"'
+            } catch (err) {
+              echo err.getMessage()
+              echo "Some test cases are getting Failed"
+            }
+          }
+          //sh 'python3 slack_integration/slack_cypress_dashboard.py'
+          sh 'node cucumber-html-report.js'
+          sh 'node multiple-cucumber-html-report.js'
+
+          // }
+
+        }
+      }
+
+    }
+  }
+
+  post {
+    always {
+
+      script {
+        def jsonFile = readJSON file: '3PL_Cypress/reports/cucumber_report.html.json'
+        def passedScenarios = 0
+        def failedScenarios = 0
+        def skippedScenarios = 0
+        jsonFile.each {
+          feature ->
+            feature.elements.each {
+              scenario ->
+                def status = "passed"
+              scenario.steps.each {
+                step ->
+                  if (step.result.status == "failed") {
+                    status = "failed"
+                  } else if (step.result.status == "skipped" && status != "failed") {
+                  status = "skipped"
+                }
+              }
+              if (status == "passed") {
+                passedScenarios++
+              } else if (status == "skipped") {
+                skippedScenarios++
+              } else {
+                failedScenarios++
+              }
+            }
+        }
+         def result = ''
+        if (failedScenarios > 0) {
+          result = " *  :x:  :x:  :x:  :x: FAIL  :x:  :x:  :x:  :x:*  Please check console logs and cucumber report to check the failed cases "
+          color = "#FF0000"
+        } else {
+          result = "*PASS :white_check_mark: * Below flows and API are working fine on Production"
+          color = "good"
+        }
+
+        echo result
+
+        try {
+          def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+          def itemDescription = item.getDescription()
+          def endTime = System.currentTimeMillis()
+          def duration = endTime - startTime
+          def durationString = String.format("%d min, %d sec",
+            TimeUnit.MILLISECONDS.toMinutes(duration),
+            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+          )
+
+          slackSend(color: color,
+            channel: channel_id,
+            attachments: [
+              [
+                title: "$JOB_NAME (${durationString})" ,
+                color:color,
+                text: "${slackUserId}!  Test Result :- ${result}  \n Total Passed Test cases : *${passedScenarios++}* \n Total Failed Test cases : *${failedScenarios++}* \n *QA Automation Owner:*${slackUserId_qa}!\n *Cc:* ${slackUserId_qa2} ${slackUserId_lead_ondemand1}! ${slackUserId_lead_ondemand2}!  ${slackUserId_director}!"
+              ],  
+
+              [
+                title: 'List of flows covered ny FRONTEND AUTOMATION in this build:-',
+                text: "<${jobDescription}|Frontend Automatio Flow List>",
+                color: '#2eb886'
+              ],
+              [
+                title: 'Jenkins Console Output Logs for this build for reference :-',
+                text: "<$BUILD_URL/console|Console Output Logs>",
+                color: '#2eb886'
+              ]
+            ])
+        } catch (err) {
+          echo err.getMessage()
+          echo "Some test cases are getting Failed"
+        }
+
+      }
+      sh "pwd"
+      dir('3PL_Cypress') {
+      sh 'python3 slack_integration/slack_cucumber_report_ondemand.py'
+      sh 'python3 slack_integration/slack_videos_ondemand.py'
+      // sh 'python3 slack_integration/slack_api_responses.py'
+      // sh 'python3 slack_integration/slack_covered_api.py'
+      }
+    }
+  }
+}
+
+System.setProperty("file.encoding", "UTF-8")

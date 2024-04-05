@@ -1,0 +1,10 @@
+  {
+
+    "base_url_acs2": "https://acs2-uat.advatix.net/acs20",
+    "acs2_user_id": "UAT",
+    "acs2_user_password": "UAT@123",
+  "setup_flow": {
+      "gg_vehicle_id": "1315561743434530993",
+      "bg_vehicle_id": "1315561743434527784"
+    }
+  } 
