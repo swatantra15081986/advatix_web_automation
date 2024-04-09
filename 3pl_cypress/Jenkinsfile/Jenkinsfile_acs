@@ -33,22 +33,22 @@ pipeline {
             steps {
                 bat "pwd"
                 dir('3pl_cypress') {
-                    sh "pwd"
-                    sh 'npm i'
-                    sh 'node create-cucumber-json.js'
-                    sh 'node delete-video.js'
-                    sh 'node delete-report.js'
-                    sh 'node create-report.js'
+                    bat "pwd"
+                    bat 'npm i'
+                    bat 'node create-cucumber-json.js'
+                    bat 'node delete-video.js'
+                    bat 'node delete-report.js'
+                    bat 'node create-report.js'
                     script {
                         try {
-                            sh 'npm run "$Script"'
+                            bat 'npm run "$Script"'
                         } catch (err) {
                             echo err.getMessage()
                             echo "Some test cases are getting Failed"
                         }
                     }
-                    sh 'node cucumber-html-report.js'
-                    sh 'node multiple-cucumber-html-report.js'
+                    bat 'node cucumber-html-report.js'
+                    bat 'node multiple-cucumber-html-report.js'
                 }
             }
         }
