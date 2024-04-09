@@ -40,7 +40,7 @@ pipeline {
                     bat 'node create-report.js'
                     script {
                         try {
-                            bat 'npm run "$Script"'
+                            bat "npm run ${Script}"
                         } catch (err) {
                             echo err.getMessage()
                             echo "Some test cases are getting Failed"
