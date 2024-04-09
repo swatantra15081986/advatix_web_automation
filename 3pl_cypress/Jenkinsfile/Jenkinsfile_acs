@@ -33,13 +33,13 @@ pipeline {
                     bat "echo %CD%"
                     bat "npm cache clean --force"
                     bat "node delete-cucumber-json.js"
-                    bat 'node --version'
-                    bat 'npm i'
-                    bat 'node create-cucumber-json.js'
                     bat 'node delete-video.js'
                     bat 'node delete-node_modules.js'
                     bat 'node delete-package-lock.js'
-                    bat 'node create-report.js'
+                    bat 'node --version'
+                    bat 'npm i'
+                    bat 'node create-cucumber-json.js'
+                     bat 'node create-report.js'
                     script {
                         try {
                             bat 'npm run %Script%'
