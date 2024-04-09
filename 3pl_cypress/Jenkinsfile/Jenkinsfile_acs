@@ -10,8 +10,12 @@ println "jenkinsUrl: ${jenkinsUrl}"
 println "jobUrl: ${jobUrl}"
 println "jobName: ${jobName}"
 def jobDescription = jobUrl
-def user = env.BUILD_USER
-println "userid: ${user}"
+def userId = ""
+def causes = currentBuild.getBuildCauses('UserIdCause')
+if (!causes.empty) {
+    userId = causes[0].getUserId()
+}
+println "UserID: ${userId}"
 def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
