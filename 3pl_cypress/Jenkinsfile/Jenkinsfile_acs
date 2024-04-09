@@ -2,7 +2,8 @@ def startTime = System.currentTimeMillis()
 import java.util.concurrent.TimeUnit
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-//def jenkinsUrl = env.JENKINS_URL
+def jenkinsUrl = env.JENKINS_URL
+echo "{jenkinsUrl}"
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
 println "jenkinsUrl: ${jenkinsUrl}"
