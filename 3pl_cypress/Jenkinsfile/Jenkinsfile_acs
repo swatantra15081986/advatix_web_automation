@@ -1,4 +1,4 @@
-//def startTime = System.currentTimeMillis()
+def startTime = System.currentTimeMillis()
 import java.util.concurrent.TimeUnit
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
