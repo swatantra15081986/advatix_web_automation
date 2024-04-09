@@ -101,7 +101,7 @@ pipeline {
                             TimeUnit.MILLISECONDS.toMinutes(duration),
                             TimeUnit.MILLISECONDS.toSeconds(duration) % 60
                     )
-
+                    def JOB_NAME = "${env.JOB_NAME}"
                     office365ConnectorSend (
                         webhookUrl: "${webhook_url}",
                         message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>$Test Result :- ${result} </strong></span></p>
