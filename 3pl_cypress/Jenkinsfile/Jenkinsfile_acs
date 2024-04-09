@@ -31,7 +31,9 @@ pipeline {
                 bat "echo %CD%"
                 dir('3pl_cypress') {
                     bat "echo %CD%"
+                    bat "npm cache clean --force"
                     bat 'npm i'
+                    bat 'sudo apt-get update && sudo apt-get install -y jq'
                     bat 'node create-cucumber-json.js'
                     bat 'node delete-video.js'
                     bat 'node delete-report.js'
