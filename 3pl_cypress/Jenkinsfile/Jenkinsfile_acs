@@ -1,29 +1,16 @@
 import java.util.concurrent.TimeUnit
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-
 def jenkinsUrl = env.JENKINS_URL
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
-
 println "jenkinsUrl: ${jenkinsUrl}"
 println "jobUrl: ${jobUrl}"
 println "jobName: ${jobName}"
-
 def jobDescription = jobUrl
-def channel_id = "C029L6QSPFW"
 def startTime = System.currentTimeMillis()
-def buildUserId = "Autoscheduler"
-
-currentBuild.rawBuild.getCauses().each { cause ->
-    if (cause.class.toString().contains("UserIdCause")) {
-        buildUserId = cause.getUserId().split("@")[0]
-    }
-}
-
 def user = env.BUILD_USER
 println "userid: ${user}"
-
 def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
 def emailTo = "swatantra.srivastava@advatix.com"
@@ -45,7 +32,7 @@ pipeline {
         stage('FRONTEND AUTOMATION CASES') {
             steps {
                 bat "pwd"
-                dir('3PL_Cypress') {
+                dir('3pl_cypress') {
                     sh "pwd"
                     sh 'npm i'
                     sh 'node create-cucumber-json.js'
@@ -70,7 +57,7 @@ pipeline {
     post {
         always {
             script {
-                def jsonFile = readJSON file: '3PL_Cypress/reports/cucumber_report.html.json'
+                def jsonFile = readJSON file: '3pl_cypress/reports/cucumber_report.html.json'
                 def passedScenarios = 0
                 def failedScenarios = 0
                 def skippedScenarios = 0
