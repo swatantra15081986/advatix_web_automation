@@ -34,7 +34,6 @@ pipeline {
                     bat "npm cache clean --force"
                     bat 'node --version'
                     bat 'npm i'
-                    bat 'sudo apt-get update && sudo apt-get install -y jq'
                     bat 'node create-cucumber-json.js'
                     bat 'node delete-video.js'
                     bat 'node delete-report.js'
