@@ -93,10 +93,7 @@ pipeline {
                 echo result
 
                 try {
-                    def item = null
-    if (env.JOB_NAME) {
-        item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
-    }
+                    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
                     def itemDescription = item.getDescription()
                     def endTime = System.currentTimeMillis()
                     def duration = endTime - startTime
