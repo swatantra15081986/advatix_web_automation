@@ -17,107 +17,107 @@ def greenColor = 'green' // Color variable Green
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 def webhook_url2 = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/6f112b4b7531447688d295ec0ea48029/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 
-pipeline {
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '10'))
-        ansiColor('xterm')
-    }
-    agent any
-    tools {
-        nodejs "node"
-    }
+// pipeline {
+//     options {
+//         buildDiscarder(logRotator(numToKeepStr: '10'))
+//         ansiColor('xterm')
+//     }
+//     agent any
+//     tools {
+//         nodejs "node"
+//     }
 
-    stages {
-        stage('FRONTEND AUTOMATION CASES') {
-            steps {
-                bat "echo %CD%"
-                dir('3pl_cypress') {
-                    bat "echo %CD%"
-                    bat 'npm i'
-                    bat 'node create-cucumber-json.js'
-                    bat 'node delete-video.js'
-                    bat 'node delete-report.js'
-                    bat 'node create-report.js'
-                    script {
-                        try {
-                            bat 'npm run %Script%'
-                        } catch (err) {
-                            echo err.getMessage()
-                            echo "Some test cases are getting Failed"
-                        }
-                    }
-                    bat 'node cucumber-html-report.js'
-                    bat 'node multiple-cucumber-html-report.js'
-                }
-            }
-        }
-    }
+//     stages {
+//         stage('FRONTEND AUTOMATION CASES') {
+//             steps {
+//                 bat "echo %CD%"
+//                 dir('3pl_cypress') {
+//                     bat "echo %CD%"
+//                     bat 'npm i'
+//                     bat 'node create-cucumber-json.js'
+//                     bat 'node delete-video.js'
+//                     bat 'node delete-report.js'
+//                     bat 'node create-report.js'
+//                     script {
+//                         try {
+//                             bat 'npm run %Script%'
+//                         } catch (err) {
+//                             echo err.getMessage()
+//                             echo "Some test cases are getting Failed"
+//                         }
+//                     }
+//                     bat 'node cucumber-html-report.js'
+//                     bat 'node multiple-cucumber-html-report.js'
+//                 }
+//             }
+//         }
+//     }
 
-    post {
-        always {
-            script {
-                def jsonFile = readJSON file: '3pl_cypress/reports/cucumber_report.html.json'
-                def passedScenarios = 0
-                def failedScenarios = 0
-                def skippedScenarios = 0
+//     post {
+//         always {
+//             script {
+//                 def jsonFile = readJSON file: '3pl_cypress/reports/cucumber_report.html.json'
+//                 def passedScenarios = 0
+//                 def failedScenarios = 0
+//                 def skippedScenarios = 0
 
-                jsonFile.each { feature ->
-                    feature.elements.each { scenario ->
-                        def status = "passed"
-                        scenario.steps.each { step ->
-                            if (step.result.status == "failed") {
-                                status = "failed"
-                            } else if (step.result.status == "skipped" && status != "failed") {
-                                status = "skipped"
-                            }
-                        }
-                        if (status == "passed") {
-                            passedScenarios++
-                        } else if (status == "skipped") {
-                            skippedScenarios++
-                        } else {
-                            failedScenarios++
-                        }
-                    }
-                }
+//                 jsonFile.each { feature ->
+//                     feature.elements.each { scenario ->
+//                         def status = "passed"
+//                         scenario.steps.each { step ->
+//                             if (step.result.status == "failed") {
+//                                 status = "failed"
+//                             } else if (step.result.status == "skipped" && status != "failed") {
+//                                 status = "skipped"
+//                             }
+//                         }
+//                         if (status == "passed") {
+//                             passedScenarios++
+//                         } else if (status == "skipped") {
+//                             skippedScenarios++
+//                         } else {
+//                             failedScenarios++
+//                         }
+//                     }
+//                 }
 
-                def result = ''
-                if (failedScenarios > 0) {
-                    result = " *  :x:  :x:  :x:  :x: FAIL  :x:  :x:  :x:  :x:*  Please check console logs and cucumber report to check the failed cases "
-                    color = redColor
-                } else {
-                    result = "*PASS :white_check_mark: * Below flows and API are working fine on Production"
-                    color = greenColor
-                }
+//                 def result = ''
+//                 if (failedScenarios > 0) {
+//                     result = " *  :x:  :x:  :x:  :x: FAIL  :x:  :x:  :x:  :x:*  Please check console logs and cucumber report to check the failed cases "
+//                     color = redColor
+//                 } else {
+//                     result = "*PASS :white_check_mark: * Below flows and API are working fine on Production"
+//                     color = greenColor
+//                 }
 
-                echo result
+//                 echo result
 
-                try {
-                    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
-                    def itemDescription = item.getDescription()
-                    def endTime = System.currentTimeMillis()
-                    def duration = endTime - startTime
-                    def durationString = String.format("%d min, %d sec",
-                            TimeUnit.MILLISECONDS.toMinutes(duration),
-                            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
-                    )
-                    def JOB_NAME = "${env.JOB_NAME}"
-                    office365ConnectorSend (
-                        webhookUrl: "${webhook_url}",
-                        message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>$Test Result :- ${result} </strong></span></p>
-                                  <p><strong>Total Passed Test cases : </strong>  *${passedScenarios++}*</p>
-                                  <p><strong>Total Failed Test cases : </strong>  *${failedScenarios++}*</p>
-                                  <p><strong>List of flows covered ny FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automatio Flow List</a></p>
-                                  <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
-                        status: "${currentBuild.currentResult.toLowerCase()}"
-                    )
-                } catch (err) {
-                    echo err.getMessage()
-                    echo "Some test cases are getting Failed"
-                }
-            }
-        }
-    }
-}
+//                 try {
+//                     def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+//                     def itemDescription = item.getDescription()
+//                     def endTime = System.currentTimeMillis()
+//                     def duration = endTime - startTime
+//                     def durationString = String.format("%d min, %d sec",
+//                             TimeUnit.MILLISECONDS.toMinutes(duration),
+//                             TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+//                     )
+//                     def JOB_NAME = "${env.JOB_NAME}"
+//                     office365ConnectorSend (
+//                         webhookUrl: "${webhook_url}",
+//                         message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>$Test Result :- ${result} </strong></span></p>
+//                                   <p><strong>Total Passed Test cases : </strong>  *${passedScenarios++}*</p>
+//                                   <p><strong>Total Failed Test cases : </strong>  *${failedScenarios++}*</p>
+//                                   <p><strong>List of flows covered ny FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automatio Flow List</a></p>
+//                                   <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
+//                         status: "${currentBuild.currentResult.toLowerCase()}"
+//                     )
+//                 } catch (err) {
+//                     echo err.getMessage()
+//                     echo "Some test cases are getting Failed"
+//                 }
+//             }
+//         }
+//     }
+// }
 
-System.setProperty("file.encoding", "UTF-8")
+// System.setProperty("file.encoding", "UTF-8")
