@@ -36,7 +36,8 @@ pipeline {
                     bat 'npm i'
                     bat 'node create-cucumber-json.js'
                     bat 'node delete-video.js'
-                    bat 'node delete-report.js'
+                    bat 'node delete-node_modules.js'
+                    bat 'node create-report.js'
                     bat 'node create-report.js'
                     script {
                         try {
