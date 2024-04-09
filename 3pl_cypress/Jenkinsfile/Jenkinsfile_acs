@@ -121,3 +121,4 @@ pipeline {
  }
 
 System.setProperty("file.encoding", "UTF-8")
+System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
