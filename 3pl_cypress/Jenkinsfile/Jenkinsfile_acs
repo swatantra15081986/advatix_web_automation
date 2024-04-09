@@ -12,8 +12,9 @@ println "jobName: ${jobName}"
 def jobDescription = jobUrl
 def userId = ""
 def causes = currentBuild.getBuildCauses('UserIdCause')
-if (!causes.empty) {
-    userId = causes[0].getUserId()
+if (causes && !causes.empty) {
+    def cause = causes[0]
+    userId = cause?.userId ?: ""
 }
 println "UserID: ${userId}"
 def redColor = 'red' // Color variable Red
