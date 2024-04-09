@@ -31,8 +31,12 @@ pipeline {
         stage('FRONTEND AUTOMATION CASES') {
             steps {
                 bat "echo %CD%"
+                bat "chmod -R 755 3pl_cypress"
+                bat "icacls 3pl_cypress /grant:r %USERNAME%:(OI)(CI)RX"
                 dir('3pl_cypress') {
                     bat "echo %CD%"
+                    bat "chmod -R 755 3pl_cypress"
+                    bat "icacls 3pl_cypress /grant:r %USERNAME%:(OI)(CI)RX"
                     bat 'npm i'
                     bat 'node create-cucumber-json.js'
                     bat 'node delete-video.js'
