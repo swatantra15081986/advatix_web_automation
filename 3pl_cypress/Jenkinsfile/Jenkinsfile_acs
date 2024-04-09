@@ -32,6 +32,7 @@ pipeline {
                 dir('3pl_cypress') {
                     bat "echo %CD%"
                     bat "npm cache clean --force"
+                    bat "node delete-cucumber-json.js"
                     bat 'node --version'
                     bat 'npm i'
                     bat 'node create-cucumber-json.js'
