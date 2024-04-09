@@ -17,41 +17,41 @@ def greenColor = 'green' // Color variable Green
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 def webhook_url2 = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/6f112b4b7531447688d295ec0ea48029/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 
-// pipeline {
-//     options {
-//         buildDiscarder(logRotator(numToKeepStr: '10'))
-//         ansiColor('xterm')
-//     }
-//     agent any
-//     tools {
-//         nodejs "node"
-//     }
+pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        ansiColor('xterm')
+    }
+    agent any
+    tools {
+        nodejs "node"
+    }
 
-//     stages {
-//         stage('FRONTEND AUTOMATION CASES') {
-//             steps {
-//                 bat "echo %CD%"
-//                 dir('3pl_cypress') {
-//                     bat "echo %CD%"
-//                     bat 'npm i'
-//                     bat 'node create-cucumber-json.js'
-//                     bat 'node delete-video.js'
-//                     bat 'node delete-report.js'
-//                     bat 'node create-report.js'
-//                     script {
-//                         try {
-//                             bat 'npm run %Script%'
-//                         } catch (err) {
-//                             echo err.getMessage()
-//                             echo "Some test cases are getting Failed"
-//                         }
-//                     }
-//                     bat 'node cucumber-html-report.js'
-//                     bat 'node multiple-cucumber-html-report.js'
-//                 }
-//             }
-//         }
-//     }
+    stages {
+        stage('FRONTEND AUTOMATION CASES') {
+            steps {
+                bat "echo %CD%"
+                dir('3pl_cypress') {
+                    bat "echo %CD%"
+                    bat 'npm i'
+                    bat 'node create-cucumber-json.js'
+                    bat 'node delete-video.js'
+                    bat 'node delete-report.js'
+                    bat 'node create-report.js'
+                    script {
+                        try {
+                            bat 'npm run %Script%'
+                        } catch (err) {
+                            echo err.getMessage()
+                            echo "Some test cases are getting Failed"
+                        }
+                    }
+                    bat 'node cucumber-html-report.js'
+                    bat 'node multiple-cucumber-html-report.js'
+                }
+            }
+        }
+    }
 
 //     post {
 //         always {
@@ -118,6 +118,6 @@ def webhook_url2 = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-
 //             }
 //         }
 //     }
-// }
+ }
 
 // System.setProperty("file.encoding", "UTF-8")
