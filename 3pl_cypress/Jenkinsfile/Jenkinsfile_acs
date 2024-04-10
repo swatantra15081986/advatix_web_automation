@@ -34,7 +34,7 @@ pipeline {
                     bat "npm cache clean --force"
                     bat "node delete-cucumber-json.js"
                     bat 'node delete-video.js'
-                    bat 'node delete-node_modules.js'
+                    //bat 'node delete-node_modules.js'
                     bat 'node delete-package-lock.js'
                     bat 'node --version'
                     bat 'npm i'
