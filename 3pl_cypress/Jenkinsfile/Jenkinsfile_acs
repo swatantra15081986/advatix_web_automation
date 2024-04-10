@@ -134,8 +134,10 @@ pipeline {
         message: """<p><span style="color: ${color};"><strong>Duration Stringm:  (${durationString}) </strong></span><span style="color: ${color};"><strong>Test Result :- ${result} </strong></span></p>
                   <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
                   <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
-                  <p><strong>List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
-                  <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
+                  <p><strong> List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
+                  <p><strong> Automation Test Cases Result report : </strong>  <a href="${BUILD_URL}/ws/3pl_cypress/reports/index.html">Frontend Automation Flow List</a></p>
+                  <p><strong> Automation Test Cases Video link for reference repot : </strong>  <a href="${BUILD_URL}/ws/3pl_cypress/reports/index.html">Click here to check the test report</a></p>
+                  <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}//ws/3pl_cypress/cypress/videos/">Click here to check the videos</a></p>""",
         status: "${result}"
     )
 } catch (err) {
