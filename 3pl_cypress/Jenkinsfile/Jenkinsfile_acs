@@ -120,28 +120,29 @@ pipeline {
             echo "${result}"
 
             try {
-                def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
-                def itemDescription = item.getDescription()
-                def endTime = System.currentTimeMillis()
-                def duration = endTime - startTime
-                def durationString = String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes(duration),
-                        TimeUnit.MILLISECONDS.toSeconds(duration) % 60
-                )
-                def JOB_NAME = "${env.JOB_NAME}"
-                office365ConnectorSend (
-                    webhookUrl: "${webhook_url}",
-                    message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>$Test Result :- ${result} </strong></span></p>
-                              <p><strong>Total Passed Test cases : </strong>  *${passedScenarios}*</p>
-                              <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}*</p>
-                              <p><strong>List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
-                              <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
-                    status: "${currentBuild.currentResult.toLowerCase()}"
-                )
-            } catch (err) {
-                echo err.getMessage()
-                echo "Some test cases are getting Failed"
-            }
+    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+    def itemDescription = item.getDescription()
+    def endTime = System.currentTimeMillis()
+    def duration = endTime - startTime
+    def durationString = String.format("%d min, %d sec",
+            TimeUnit.MILLISECONDS.toMinutes(duration),
+            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+    )
+    def JOB_NAME = "${env.JOB_NAME}"
+    office365ConnectorSend (
+        webhookUrl: "${webhook_url}",
+        message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>${Test} Result :- ${result} </strong></span></p>
+                  <p><strong>Total Passed Test cases : </strong>  *${passedScenarios}*</p>
+                  <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}*</p>
+                  <p><strong>List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
+                  <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
+        status: "${currentBuild.currentResult.toLowerCase()}"
+    )
+} catch (err) {
+    echo err.getMessage()
+    // No need for this line: echo "Some test cases are getting Failed"
+}
+
         }
     }
 }
