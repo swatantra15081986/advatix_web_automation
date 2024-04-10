@@ -70,7 +70,7 @@ pipeline {
     post {
         always {
             script {
-                def jsonFile = readJSON file: '3pl_cypress/reports/cucumber_report.html.json'
+                def jsonFile = readJSON file: '3pl_cypress\\reports\\cucumber_report.html.json'
                 def passedScenarios = 0
                 def failedScenarios = 0
                 def skippedScenarios = 0
