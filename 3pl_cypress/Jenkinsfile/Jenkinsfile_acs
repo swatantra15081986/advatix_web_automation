@@ -53,6 +53,20 @@ pipeline {
                 }
             }
         }
+
+        stage('PUBLISH CUCUMBER REPORT') {
+      steps {
+        script {
+          cucumber([
+            result: 'UNSTABLE',
+            fileIncludePattern: 'cypress/cucumber-json/**/*.json',
+            theme: 'simple'
+          ])
+        }
+      }
+    }
+
+  }
     }
 
     post {
