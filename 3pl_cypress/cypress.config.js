@@ -32,6 +32,7 @@ module.exports = defineConfig({
   failOnStatusCode: false,
   experimentalMemoryManagement: true,
   trashAssetsBeforeRuns: true,
+  video: true,
   retries: {
     runMode: 0,
     openMode: 0,
