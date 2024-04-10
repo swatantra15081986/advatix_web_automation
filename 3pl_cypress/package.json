@@ -4,7 +4,8 @@
   "description": "WEB_Automation_3PL",
   "main": "index.js",
   "scripts": {
-    "acs2": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=staging"
+    "acs2_staging": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=staging",
+    "acs2_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=uat"
   },
   "author": "Swatantra",
   "license": "ISC",
