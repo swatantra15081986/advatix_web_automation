@@ -106,7 +106,7 @@ pipeline {
                     color = greenColor
                 }
 
-                echo result
+                echo "${result}"
 
                 try {
                     def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
