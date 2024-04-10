@@ -19,7 +19,6 @@
     "file-url": "^4.0.0",
     "fs-extra": "^10.0.0",
     "gherkin": "^9.0.0",
-    "lodash": "^4.17.21",
     "moment-timezone": "^0.5.43",
     "mongodb": "^4.4.1",
     "multiple-cucumber-html-reporter": "^1.21.4",

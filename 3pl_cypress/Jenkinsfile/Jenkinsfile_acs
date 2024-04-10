@@ -55,16 +55,14 @@ pipeline {
         }
 
         stage('PUBLISH CUCUMBER REPORT') {
-      steps {
+    steps {
         script {
-          cucumber([
-            result: 'UNSTABLE',
-            fileIncludePattern: 'cypress/cucumber-json/**/*.json',
-            theme: 'simple'
-          ])
+            cucumber([
+                fileIncludePattern: 'cypress/cucumber-json/**/*.json'
+            ])
         }
-      }
     }
+}
 
   }
     
