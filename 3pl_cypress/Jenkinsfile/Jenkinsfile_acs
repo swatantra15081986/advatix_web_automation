@@ -69,73 +69,80 @@ pipeline {
     
 
     post {
-        always {
-            script {
-                def jsonFileContents = readFile(file: '3pl_cypress/reports/cucumber_report.html.json')
-                def jsonFile = new groovy.json.JsonSlurper().parseText(jsonFileContents)
-               // def jsonFile = readJSON file: '3pl_cypress\\reports\\cucumber_report.html.json'
-                def passedScenarios = 0
-                def failedScenarios = 0
-                def skippedScenarios = 0
+    always {
+        script {
+            def jsonFileContents = readFile(file: '3pl_cypress/reports/cucumber_report.html.json')
+            def jsonFile = new groovy.json.JsonSlurper().parseText(jsonFileContents)
 
-                jsonFile.each { feature ->
-                    feature.elements.each { scenario ->
-                        def status = "passed"
-                        scenario.steps.each { step ->
-                            if (step.result.status == "failed") {
+            def passedScenarios = 0
+            def failedScenarios = 0
+            def skippedScenarios = 0
+
+            jsonFile.each { feature ->
+                feature.elements.each { scenario ->
+                    def status = "passed"
+                    scenario.steps.each { step ->
+                        switch (step.result.status) {
+                            case "failed":
                                 status = "failed"
-                            } else if (step.result.status == "skipped" && status != "failed") {
-                                status = "skipped"
-                            }
-                        }
-                        if (status == "passed") {
-                            passedScenarios++
-                        } else if (status == "skipped") {
-                            skippedScenarios++
-                        } else {
-                            failedScenarios++
+                                break
+                            case "skipped":
+                                if (status != "failed") {
+                                    status = "skipped"
+                                }
+                                break
                         }
                     }
+                    switch (status) {
+                        case "passed":
+                            passedScenarios++
+                            break
+                        case "skipped":
+                            skippedScenarios++
+                            break
+                        case "failed":
+                            failedScenarios++
+                            break
+                    }
                 }
+            }
 
-                def result = ''
-                if (failedScenarios > 0) {
-                    result = " *  :x:  :x:  :x:  :x: FAIL  :x:  :x:  :x:  :x:*  Please check console logs and cucumber report to check the failed cases "
-                    color = redColor
-                } else {
-                    result = "*PASS :white_check_mark: * Below flows and API are working fine on Production"
-                    color = greenColor
-                }
+            def result = ''
+            def color = ''
+            if (failedScenarios > 0) {
+                result = " *  :x:  :x:  :x:  :x: FAIL  :x:  :x:  :x:  :x:*  Please check console logs and cucumber report to check the failed cases "
+                color = 'red'
+            } else {
+                result = "*PASS :white_check_mark: * Below flows and API are working fine on Production"
+                color = 'green'
+            }
 
-                echo "${result}"
+            echo "${result}"
 
-                try {
-                    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
-                    def itemDescription = item.getDescription()
-                    def endTime = System.currentTimeMillis()
-                    def duration = endTime - startTime
-                    def durationString = String.format("%d min, %d sec",
-                            TimeUnit.MILLISECONDS.toMinutes(duration),
-                            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
-                    )
-                    def JOB_NAME = "${env.JOB_NAME}"
-                    office365ConnectorSend (
-                        webhookUrl: "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c",
-                        message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>$Test Result :- ${result} </strong></span></p>
-                                  <p><strong>Total Passed Test cases : </strong>  *${passedScenarios++}*</p>
-                                  <p><strong>Total Failed Test cases : </strong>  *${failedScenarios++}*</p>
-                                  <p><strong>List of flows covered ny FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automatio Flow List</a></p>
-                                  <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
-                        status: "${currentBuild.currentResult.toLowerCase()}"
-                    )
-                } catch (err) {
-                    echo err.getMessage()
-                    echo "Some test cases are getting Failed"
-                }
+            try {
+                def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+                def itemDescription = item.getDescription()
+                def endTime = System.currentTimeMillis()
+                def duration = endTime - startTime
+                def durationString = String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(duration),
+                        TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+                )
+                def JOB_NAME = "${env.JOB_NAME}"
+                office365ConnectorSend (
+                    webhookUrl: "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c",
+                    message: """<p><span style="color: ${color};"><strong>$JOB_NAME (${durationString}) </strong></span><span style="color: ${color};"><strong>$Test Result :- ${result} </strong></span></p>
+                              <p><strong>Total Passed Test cases : </strong>  *${passedScenarios}*</p>
+                              <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}*</p>
+                              <p><strong>List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
+                              <p><strong>Job URL :</strong>  <a href="${env.BUILD_URL}/console">CLICK HERE TO CHECK THE CONSOLE OUTPUT LOGS</a></p>""",
+                    status: "${currentBuild.currentResult.toLowerCase()}"
+                )
+            } catch (err) {
+                echo err.getMessage()
+                echo "Some test cases are getting Failed"
             }
         }
     }
- }
-
-System.setProperty("file.encoding", "UTF-8")
-System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
+}
+}
