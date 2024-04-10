@@ -54,15 +54,15 @@ pipeline {
             }
         }
 
-//         stage('PUBLISH CUCUMBER REPORT') {
-//     steps {
-//         script {
-//             cucumber([
-//                 fileIncludePattern: 'cypress/cucumber-json/**/*.json'
-//             ])
-//         }
-//     }
-// }
+        stage('PUBLISH CUCUMBER REPORT') {
+    steps {
+        script {
+            cucumber([
+                fileIncludePattern: 'cypress/cucumber-json/**/*.json'
+            ])
+        }
+    }
+}
 
   }
     
