@@ -16,16 +16,15 @@ Cypress.Commands.add("verify_table_status", (selector1,selector2,header_name,hea
             cy.log($id.text())
             cy.get(selector2).eq(index).then(function ($status) {
                const status = $status.text()
-               cy.log("header_value is :" +status)
+               cy.log("header_value is :" + status)
                expect(status).to.include(header_value)
            })
         }
         })
 })
 
-
 Cypress.Commands.add("contains_value", (selector1, text_value) => {
-    selector1.contains(text_value)
+    cy.get(selector1).contains(text_value)
 })
 
 Cypress.Commands.add("verify_iframe_table_status", (selector1, selector2, header_name, status1) => {
@@ -63,8 +62,7 @@ Cypress.Commands.add("table_value", (selector) => {
         cy.log("Consignment number is: " + consignment_number) 
         return consignment_number  
     })
-    
-})
+ })
 
 Cypress.Commands.add("download_file", (selector,value) => {
     cy.window().document().then(function (doc) {
@@ -104,6 +102,59 @@ Cypress.Commands.add("visit_url", (url_link) => {
 Cypress.Commands.add("dropdown_selection", (option) => {
     cy.get("select").select(["option"])
 })
+
+Cypress.Commands.add("verify_table_data", (selector, expected_value) => {
+    cy.xpath(selector).then(($element) => {
+        var actual_value = $element.text()
+        // Further assertion or processing
+        expect(actual_value).to.include(expected_value)
+    })
+    
+})
+      
+    
+
+ 
+ 
+                
+    
+
+
+
+
+
+                   
+ 
+  
+  
+
+
+
+
+ 
+
+
+
+    
+
+
+
+
+
+
+
+
+    
+    
+        
+  
+ 
+
+
+
+
+ 
+
 
 
 

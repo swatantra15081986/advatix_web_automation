@@ -3,6 +3,8 @@ import custom_login from '../../../cypress/custom/custom_acs2/custom_login'
 const custom_login1 = new custom_login()
 import custom_fc from '../../custom/custom_acs2/custom_fc'
 const custom_fc1 = new custom_fc()
+import page_fc from '../../../cypress/page_objects/page_acs2/page_fc'
+const page_fc1 = new page_fc()
 const fixture_setup = require('../../../cypress/fixtures/fixture_acs2/fixture_setup.json')
 var env_acs2 = Cypress.env('env_acs2')
 var env_acs2_data, acs2_user_name, acs2_password, dashboard_url, facility_url
@@ -36,7 +38,7 @@ Then('User should get logged in successfully on ASC2 Order dashboard Page', () =
 Given('Test data for the FC creation mandatory field like " FC Name", " country", " State", " City", " Address", " Postal Code", " E Mail", " Mobile"', function ()  {
     cy.random('FC_AUTO').then((number) => {
         fc_name = number
-        cy.log("FC NAME IS :" + fc_name)
+        cy.log("FC NAME IS : " + fc_name)
     })
     fc_country = fixture_setup.fc_setup.country
     fc_state = fixture_setup.fc_setup.state
@@ -46,7 +48,6 @@ Given('Test data for the FC creation mandatory field like " FC Name", " country"
     fc_email = fixture_setup.fc_setup.e_mail
     fc_mobile = fixture_setup.fc_setup.mobile 
     facility_url = env_acs2_data.base_url_acs2 + fixture_setup.setup_url[2]
-    cy.log( " FC NAME IS : " + fc_name)
     cy.log( " FC COUNTRY IS : " + fc_country)
     cy.log( " FC STATE IS : " + fc_state)
     cy.log( " FC CITY IS : " + fc_city)
@@ -57,6 +58,7 @@ Given('Test data for the FC creation mandatory field like " FC Name", " country"
 })
 
 When('Click on the Facility left side options', () => {
+    cy.log( " FC NAME IS IN LOG : " + fc_name)
     cy.visit_url(facility_url)
 })
 
@@ -111,7 +113,7 @@ When('Click on "Submit" button', () => {
 
 Then('FC should be created', () => {
     custom_fc1.custom_fc_close()
-    cy.verify_table_status("th", "td", "FC Name", fc_name)
+    cy.verify_table_data(page_fc1.page_fc_search(), fc_name)
 })
 
 

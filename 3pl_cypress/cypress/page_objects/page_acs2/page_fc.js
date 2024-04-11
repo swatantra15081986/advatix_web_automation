@@ -56,6 +56,18 @@ class page_fc {
         return cy.xpath('//*[@id="closeaddform"]')
     }
 
+    page_header(){
+        return ("th")
+    }
+
+    page_data(){
+        return ("td")
+    }
+
+    page_fc_search(){
+        return("//table/tbody/tr[1]/td[1]")
+    }
+
 
 
 

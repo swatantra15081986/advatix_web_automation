@@ -58,6 +58,7 @@ class custom_fc {
 
     custom_fc_close(){
         page_fc1.page_fc_close().click({force:true})
+        cy.wait(3000)
     }
 
     
