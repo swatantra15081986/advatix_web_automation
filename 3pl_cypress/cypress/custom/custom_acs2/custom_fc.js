@@ -61,6 +61,12 @@ class custom_fc {
         cy.wait(3000)
     }
 
+    custom_warehouse_search(fc_name){
+        page_fc1.page_fc_filter().click({force:true})
+        page_fc1.page_warehouse_name().type(fc_name)
+        page_fc1.page_search_submit().click({force:true})
+    }
+
     
 
 }   

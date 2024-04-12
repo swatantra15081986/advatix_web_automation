@@ -11,7 +11,7 @@ Feature: FC CREATION IN ACS 2
         Then User should get logged in successfully on ASC2 Order dashboard Page
 
     @sanity @regression
-    Scenario: FC should be created after entring all mandatory field
+    Scenario: FC should be created after entring all mandatory field and should be displayed in the FC list in MANAGE FC Page
         Given Test data for the FC creation mandatory field like " FC Name", " country", " State", " City", " Address", " Postal Code", " E Mail", " Mobile"
         When Click on the Facility left side options
         And Click on FC button in the "Facility and Settings" sections
@@ -26,7 +26,7 @@ Feature: FC CREATION IN ACS 2
         And Enter the " Email"
         And Enter the " Mobile"
         And Click on "Submit" button
-        Then FC should be created
+        Then FC should be created and should be displayed in the "MANAGE FC" page
 
 
 

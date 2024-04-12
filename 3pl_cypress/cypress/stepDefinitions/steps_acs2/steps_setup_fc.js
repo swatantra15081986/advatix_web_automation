@@ -111,8 +111,9 @@ When('Click on "Submit" button', () => {
     custom_fc1.custom_submit()
 })
 
-Then('FC should be created', () => {
+Then('FC should be created and should be displayed in the "MANAGE FC" page', () => {
     custom_fc1.custom_fc_close()
+    custom_fc1.custom_warehouse_search(fc_name)
     cy.verify_table_data(page_fc1.page_fc_search(), fc_name)
 })
 

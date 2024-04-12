@@ -68,6 +68,18 @@ class page_fc {
         return("//table/tbody/tr[1]/td[1]")
     }
 
+    page_fc_filter(){
+        return cy.get(".searchBox")
+    }
+
+    page_warehouse_name(){
+        return cy.get("#WAREHOUSE_NAME")
+    }
+
+    page_search_submit(){
+        return cy.get("#searchSubmit")
+    }
+
 
 
 
