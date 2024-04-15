@@ -5,9 +5,9 @@ const page_dashboard1 = new page_dashboard()
 class custom_dashboard_menu {
 
     custom_manage_purchase_order(){
-        cy.wait(3000)       // Applied Hard wait due to handle mouse events
+        cy.wait(1000)       // Applied Hard wait due to handle mouse events
         page_dashboard1.page_inventory().realHover('mouse')
-        cy.wait(3000)       // Applied Hard wait due to handle mouse events
+        cy.wait(1000)       // Applied Hard wait due to handle mouse events
         page_dashboard1.page_receiving_button1().realHover('mouse')
         page_dashboard1.page_manage_purchase_order().click()
     }

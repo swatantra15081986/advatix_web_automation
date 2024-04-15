@@ -12,6 +12,14 @@ class page_login {
         return cy.xpath('//*[@id="loginbtn"]')
     }
 
+    page_header(){
+        return ("th")
+    }
+
+    page_data(){
+        return ("td")
+    }
+
 
 
 }

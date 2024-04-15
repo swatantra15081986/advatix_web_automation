@@ -46,11 +46,13 @@ class custom_purchase_order {
 
     custom_submit() {
         page_purchase_order1.page_submit().click({ force: true })
-        cy.wait(3000)
+        cy.wait(1000)
     }
 
     custom_close_button() {
         page_purchase_order1.page_close_button().click({ force: true })
+        cy.wait(1000)
+
     }
 
     custom_po_search(purchase_order_number) {
@@ -58,10 +60,7 @@ class custom_purchase_order {
         page_purchase_order1.page_po_filter().type(purchase_order_number)
         page_purchase_order1.page_po_filter_search().click()
     }
-
-    custom_po_approve() {
-        page_purchase_order1.page_po_approve_button().click({force:true})
-    }
+    
 
 
 

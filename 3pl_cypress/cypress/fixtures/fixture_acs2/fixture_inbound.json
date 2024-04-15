@@ -3,5 +3,11 @@
         "status": [
             "CREATED "
         ]
+    },
+    "asn": {
+        "status": [
+            "CREATED ",
+            "Arrived"
+        ]
     }
 }

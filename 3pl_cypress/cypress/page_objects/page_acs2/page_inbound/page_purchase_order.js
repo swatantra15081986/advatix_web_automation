@@ -71,9 +71,14 @@ class page_purchase_order {
         return cy.get("button").contains(" Search")
     }
 
-    page_po_approve_button() {
-        return cy.contains('Approve')
+    page_asn_page() {
+        return ('Manage Receiving/Return')
     }
+
+    page_asn_filter(){
+        return cy.get('[placeholder="ASN #"]')
+    }
+
 
 
 

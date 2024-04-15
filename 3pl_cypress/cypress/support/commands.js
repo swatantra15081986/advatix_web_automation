@@ -32,7 +32,7 @@ Cypress.Commands.add("verify_iframe_table_status", (selector1, selector2, header
         if ($id.text().trim() === header_name) {
             cy.log("name of column value is :" + $id.text().trim())
             cy.iframe().find(selector2).eq(index).then(function ($status) {
-                cy.wait(3000)
+                cy.wait(1000)
                 const status = $status.text()
                 cy.log("name of column value is : " + status)
                 expect(status).to.include(status1)
@@ -77,7 +77,7 @@ Cypress.Commands.add("download_file", (selector, value) => {
         doc.addEventListener('click', () => {
             setTimeout(function () { doc.location.reload() }, 5000)
         })
-        cy.wait(3000)
+        cy.wait(1000)
         cy.get(selector).contains(value).invoke('show').click({ force: true })
     })
 
@@ -127,6 +127,14 @@ Cypress.Commands.add("verify_table_data_css", (selector, index, expected_value) 
     })
 })
 
+Cypress.Commands.add("verify_table_data_contains", (selector, expected_value) => {
+    cy.contains(selector).then(($element) => {
+        var actual_value = $element.text()
+        // Further assertion or processing
+        expect(actual_value).to.include(expected_value)
+    })
+})
+
 Cypress.Commands.add("verify_table_status_not_null", (selector1, selector2, header_name) => {
     cy.get(selector1).each(($id, index, $list) => {
         if ($id.text() === header_name) {
@@ -152,10 +160,30 @@ Cypress.Commands.add("network_response", (event_name) => {
     return response_body
 })
 
-Cypress.Commands.add("filter_selection", (filter_selector, module_selector, module_number,search_selector) => {
+Cypress.Commands.add("filter_selection", (filter_selector, module_selector, module_number, search_selector) => {
     filter_selector.click()
+    module_selector.clear()
     module_selector.type(module_number)
     search_selector.click()
+    cy.wait(3000) // putting wait for successfully applied filter
+})
+
+Cypress.Commands.add("menu_dashboard_item", (dashboard_main_menu_selector, selector_under_main_menu, selector_under_sub_menu) => {
+    cy.wait(1000)       // Applied Hard wait due to handle mouse events
+    dashboard_main_menu_selector.realHover('mouse')
+    cy.wait(1000)       // Applied Hard wait due to handle mouse events
+    selector_under_main_menu.realHover('mouse')
+    cy.wait(1000) 
+    selector_under_sub_menu.click()
+})
+
+Cypress.Commands.add("action_item", (selector) => {
+    selector.click({force:true})
+    cy.get(1000) // putting wait for successfully applied filter
+})
+
+Cypress.Commands.add("select_css", (option) => {
+    cy.xpath(selector).select(option)
 })
 
 

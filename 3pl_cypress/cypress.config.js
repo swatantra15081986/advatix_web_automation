@@ -30,12 +30,14 @@ module.exports = defineConfig({
   "options.printLogsToConsole": "always",
   numTestsKeptInMemory: 0,
   failOnStatusCode: false,
+  //waitForAnimations: false,
+  //animationDistanceThreshold: 50,
   experimentalMemoryManagement: true,
   trashAssetsBeforeRuns: true,
   video: true,
   retries: {
-    runMode: 0,
-    openMode: 0,
+    runMode: 1,
+    openMode: 1,
   },
 
   e2e: {

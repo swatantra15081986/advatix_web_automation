@@ -9,7 +9,7 @@ class page_dashboard_menu {
     }
 
     page_receiving_button2() {
-        return cy.get('#Receiving').eq(1)
+        return cy.get('[id="Receiving"]').eq(1)
     }
 
     page_manage_purchase_order() {

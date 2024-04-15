@@ -3,15 +3,23 @@ import custom_dashboard_menu from '../../../../cypress/custom/custom_acs2/custom
 const custom_dashboard_menu1 = new custom_dashboard_menu()
 import custom_purchase_order from '../../../../cypress/custom/custom_acs2/custom_inbound/custom_purchase_order'
 const custom_purchase_order1 = new custom_purchase_order()
+import custom_asn from '../../../custom/custom_acs2/custom_inbound/custom_asn'
+const custom_asn1 = new custom_asn()
 import page_purchase_order from '../../../../cypress/page_objects/page_acs2/page_inbound/page_purchase_order'
 const page_purchase_order1 = new page_purchase_order()
+import page_dashboard_menu from '../../../../cypress/page_objects/page_acs2/page_inbound/page_dashboard_menu'
+const page_dashboard1 = new page_dashboard_menu()
+import page_generic from '../../../../cypress/page_objects/page_acs2/page_generic'
+const page_generic1 = new page_generic()
+import page_asn from '../../../page_objects/page_acs2/page_inbound/page_asn'
+const page_asn1 = new page_asn()
 import resources_purchase_order from '../../../../cypress/api_utilities/resources/resources_acs2/resources_inbound/resources_purchase_order'
 const resources_purchase_order1 = new resources_purchase_order()
 const fixtures_inbound = require('../../../../cypress/fixtures/fixture_acs2/fixture_inbound.json')
 var env_acs2 = Cypress.env('env_acs2')
 var env_acs2_data
 var client_name, fc_name, customer_name, supplier_name, product_sku, product_name, product_qty
-var purchase_order_number_network, response_body
+var purchase_order_number_network, response_body, asn_number
 
 before(function () {
     cy.readFile(env_acs2).then((data) => {
@@ -111,9 +119,55 @@ Then('Purchase order should be displayed in the top of the list', () => {
 })
 
 When('Search the PO number in the PO filter button', () => {
-    cy.filter_selection(page_purchase_order1.page_filter(), page_purchase_order1.page_po_filter(),purchase_order_number_network, page_purchase_order1.page_po_filter_search() )
+    cy.filter_selection(page_purchase_order1.page_filter(), page_purchase_order1.page_po_filter(), purchase_order_number_network, page_purchase_order1.page_po_filter_search())
 })
 
-When('Click on the " Approve " button"', () => {
-    custom_purchase_order1.custom_po_approve()
+When('Click on the " Approve " button', () => {
+    cy.action_item(page_generic1.page_action())
 })
+
+When('Click on the "Receiving" icon from the " Receiving" option under "inventory" button from  Dashboard menu items', () => {
+    cy.menu_dashboard_item(page_dashboard1.page_inventory(), page_dashboard1.page_receiving_button1(), page_dashboard1.page_receiving_button2())
+})
+
+Then('ASN receiving page should be opened', () => {
+    cy.verify_table_data_contains(page_purchase_order1.page_asn_page(), "Manage Receiving/Return")
+})
+
+When('Search the ASN number in the ASN filter button by typing PO number in the ASN filter', () => {
+    cy.filter_selection(page_purchase_order1.page_filter(), page_purchase_order1.page_asn_filter(), purchase_order_number_network, page_purchase_order1.page_po_filter_search())
+})
+
+Then('ASN Number should be same as the number of purchase order', () => {
+    cy.verify_table_status(page_generic1.page_header(), page_generic1.page_data(), "ASN/Return Number ", purchase_order_number_network)
+})
+
+Then('Save this ASN number for the future reference', () => {
+    asn_number = purchase_order_number_network
+    cy.log(" ASN NUMBER IS : " + asn_number)
+})
+
+When('click on the "change status" button', () => {
+    cy.action_item(page_asn1.page_action_change_status())
+})
+
+When('Click on the "Select Status" filter button and select option "Arrived"', () => {
+    custom_asn1.custom_select_option("Arrived")
+})
+
+When('Click on the " Submit " button for marked arrived', () => {
+    custom_asn1.custom_asn_submit()
+})
+
+Then('Success Pop up should be displayed with "Updated" message', () => {
+    cy.verify_table_data_css(page_asn1.page_success_popup(), 0, "Updated!")
+})
+
+Then('Click on "OK" button of pop up to close pop up', () => {
+    custom_asn1.custom_success_popup_ok()
+})
+
+Then('Status of ASN should be changed to "Arrived"', () => {
+    cy.verify_table_data(page_asn1.page_arrived_status_path(), fixtures_inbound.asn.status[1])
+})
+
