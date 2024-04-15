@@ -115,11 +115,24 @@ Then('FC should be created and should be displayed in the "MANAGE FC" page', () 
     custom_fc1.custom_fc_close()
     custom_fc1.custom_warehouse_search(fc_name)
     cy.verify_table_data(page_fc1.page_fc_search(), fc_name)
+    cy.verify_table_status("th", "td" , "FC Name ", fc_name)
 })
 
+Then('Verify the "status" of the FC in the  "MANAGE FC" page, It should be "ACTIVE"', () => {
+    cy.verify_table_status("th", "td" , "Status ", " ACTIVE ")
+})
 
+Then('Verify the "FC CODE" of the FC in the  "MANAGE FC" page, It should "Not be NULL"', () => {
+    cy.verify_table_status_not_null("th", "td" , "FC Code ")
+})
 
+Then('Verify the "City" of the FC in the  "MANAGE FC" page', () => {
+    cy.verify_table_status("th", "td" , "City  ", fc_city)
+})
 
+Then('Verify the "State" of the FC in the  "MANAGE FC" page', () => {
+    cy.verify_table_status("th", "td" , "State ", fc_state)
+})
 
 
 

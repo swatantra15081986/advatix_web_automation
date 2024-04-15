@@ -55,7 +55,7 @@ module.exports = defineConfig({
       // })
       require("cypress-terminal-report/src/installLogsPrinter")(on);
       // accept a configFile value or use dev by default
-      const file = config.env.configFile || "staging";
+      const file = config.env.configFile || "uat";
       return getConfigurationByFile(file);  
     },
     specPattern: "**/*.{feature,features}",

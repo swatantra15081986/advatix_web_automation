@@ -20,6 +20,7 @@ import './commands'
 require('cypress-xpath')
 require('cypress-terminal-report/src/installLogsCollector')()
 require('cypress-plugin-api')
+import "cypress-real-events/support";
 // Import commands.js using ES2015 syntax:
 
 

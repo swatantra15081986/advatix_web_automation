@@ -27,6 +27,12 @@ Feature: FC CREATION IN ACS 2
         And Enter the " Mobile"
         And Click on "Submit" button
         Then FC should be created and should be displayed in the "MANAGE FC" page
+        Then Verify the "status" of the FC in the  "MANAGE FC" page, It should be "ACTIVE"
+        Then Verify the "FC CODE" of the FC in the  "MANAGE FC" page, It should "Not be NULL"
+        Then Verify the "City" of the FC in the  "MANAGE FC" page
+        Then Verify the "State" of the FC in the  "MANAGE FC" page
+
+
 
 
 

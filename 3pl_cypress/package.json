@@ -27,7 +27,7 @@
     "nodejslack": "^1.4.0",
     "pg": "^8.11.0",
     "request-promise": "^4.2.6",
-     "termcolor": "^0.2.0",
+    "termcolor": "^0.2.0",
     "xml2js": "^0.6.2"
   },
   "cypress-cucumber-preprocessor": {

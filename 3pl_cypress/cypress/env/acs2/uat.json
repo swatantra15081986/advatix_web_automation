@@ -1,10 +1,16 @@
   {
-
     "base_url_acs2": "https://acs2-uat.advatix.net/acs20",
-    "acs2_user_id": "UAT",
-    "acs2_user_password": "UAT@123",
-  "setup_flow": {
-      "gg_vehicle_id": "1315561743434530993",
-      "bg_vehicle_id": "1315561743434527784"
-    }
-  } 
+    "acs2_user_id": "autouser",
+    "acs2_user_password": "Info@124",
+    "setup_flow": {
+      "acs2_client": "autoclient",
+      "acs2_fc": "DFWX1",
+      "acs2_customer": "autocustomer",
+      "acs2_supplier": "autosupplier"
+    },
+    "product_details": {
+      "product_sku": "SKU1_AUTO",
+      "product_name": "name1_auto",
+      "product_qty": "1"
+       }
+  }
