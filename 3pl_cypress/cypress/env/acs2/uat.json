@@ -2,6 +2,7 @@
     "base_url_acs2": "https://acs2-uat.advatix.net/acs20",
     "acs2_user_id": "autouser",
     "acs2_user_password": "Info@124",
+    "api_web_base_url": "https://acs2-uat.advatix.net",
     "setup_flow": {
       "acs2_client": "autoclient",
       "acs2_fc": "DFWX1",
@@ -12,5 +13,9 @@
       "product_sku": "SKU1_AUTO",
       "product_name": "name1_auto",
       "product_qty": "1"
-       }
+       },
+       "container_details": {
+        "ver": "1.0",
+        "warehouse_location": "1"
+         }
   }

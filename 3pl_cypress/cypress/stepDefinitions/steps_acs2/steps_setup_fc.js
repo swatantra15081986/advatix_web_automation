@@ -130,7 +130,7 @@ Then('Verify the "City" of the FC in the  "MANAGE FC" page', () => {
     cy.verify_table_status("th", "td" , "City  ", fc_city)
 })
 
-Then('Verify the "State" of the FC in the  "MANAGE FC" page', () => {
+Then('Verify the "State" of the FC in the  "MANAGE FC" page',  function () {
     cy.verify_table_status("th", "td" , "State ", fc_state)
 })
 

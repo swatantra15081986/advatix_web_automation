@@ -186,6 +186,22 @@ Cypress.Commands.add("select_css", (option) => {
     cy.xpath(selector).select(option)
 })
 
+Cypress.Commands.add("verify_response_value", (actual_response_key_value, expected_reeponse_key_value) => {
+    expect(actual_response_key_value).equal(expected_reeponse_key_value)
+})
+
+Cypress.Commands.add("verify_response_value_include", (actual_response_key_value, expected_response_key_value) => {
+    expect(actual_response_key_value).to.include(expected_response_key_value)
+})
+
+Cypress.Commands.add("verify_response_value_include_or", (expected_response_key_value, actual_response_key_value) => {
+    expect(expected_response_key_value).to.include(actual_response_key_value)
+})
+
+Cypress.Commands.add("verify_response_value_not_null", (actual_response_key_value) => {
+    expect(actual_response_key_value).to.not.be.null
+})
+
 
 
 

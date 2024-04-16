@@ -5,6 +5,8 @@ import custom_purchase_order from '../../../../cypress/custom/custom_acs2/custom
 const custom_purchase_order1 = new custom_purchase_order()
 import custom_asn from '../../../custom/custom_acs2/custom_inbound/custom_asn'
 const custom_asn1 = new custom_asn()
+import custom_container from '../../../../cypress/api_utilities/custom_api/custom_api_acs2/custom_api_inbound/custom_container'
+const custom_container1 = new custom_container()
 import page_purchase_order from '../../../../cypress/page_objects/page_acs2/page_inbound/page_purchase_order'
 const page_purchase_order1 = new page_purchase_order()
 import page_dashboard_menu from '../../../../cypress/page_objects/page_acs2/page_inbound/page_dashboard_menu'
@@ -15,15 +17,35 @@ import page_asn from '../../../page_objects/page_acs2/page_inbound/page_asn'
 const page_asn1 = new page_asn()
 import resources_purchase_order from '../../../../cypress/api_utilities/resources/resources_acs2/resources_inbound/resources_purchase_order'
 const resources_purchase_order1 = new resources_purchase_order()
+import resources_generic from '../../../../cypress/api_utilities/resources/resources_acs2/resources_inbound/resources_generic'
+const resources_generic1 = new resources_generic()
+import resources_setup from '../../../../cypress/api_utilities/resources/resources_acs2/resources_inbound/resources_setup'
+const resources_setup1 = new resources_setup()
 const fixtures_inbound = require('../../../../cypress/fixtures/fixture_acs2/fixture_inbound.json')
 var env_acs2 = Cypress.env('env_acs2')
-var env_acs2_data
+var env_acs2_data, web_login_token
 var client_name, fc_name, customer_name, supplier_name, product_sku, product_name, product_qty
 var purchase_order_number_network, response_body, asn_number
+var container_creation_url, auth_token, warehouse_location, ver, bar_code
+var container_number
 
 before(function () {
     cy.readFile(env_acs2).then((data) => {
         env_acs2_data = data
+    })
+})
+
+When('Open the " Network" tab to capture the network responses of login', () => {
+    cy.network_intercept("POST", resources_generic1.resources_acs2_login(), "login_token")
+})
+
+Then('Store the token number value value in variable  from the response of network call button', () => {
+    cy.wait('@login_token').then((interception) => {
+        // Assert that the response contains the expected data
+        response_body = interception.response.body
+        cy.log(" RESPONSE BODY IS : " + JSON.stringify(response_body), null, 2)
+        web_login_token = response_body.responseObject.tokenString
+        cy.log("Web login token is: " + web_login_token)
     })
 })
 
@@ -92,7 +114,7 @@ And('Click on the " Submit " button', () => {
     custom_purchase_order1.custom_submit()
 })
 
-And('Store the purchase order number value in variable  from the response of network call button', () => {
+And('Store the purchase order number value in variable  from the response of network call button', function () {
     cy.wait('@po_creation').then((interception) => {
         // Assert that the response contains the expected data
         response_body = interception.response.body
@@ -170,4 +192,37 @@ Then('Click on "OK" button of pop up to close pop up', () => {
 Then('Status of ASN should be changed to "Arrived"', () => {
     cy.verify_table_data(page_asn1.page_arrived_status_path(), fixtures_inbound.asn.status[1])
 })
+
+When('Status of ASN should be changed to "Arrived"', () => {
+    cy.verify_table_data(page_asn1.page_arrived_status_path(), fixtures_inbound.asn.status[1])
+})
+
+
+Given('End points for container creation, Authorization Token, warehouse location, bar code and container name', () => {
+    container_creation_url = env_acs2_data.api_web_base_url + resources_setup1.resources_container_create()
+    auth_token = web_login_token
+    warehouse_location = env_acs2_data.container_details.warehouse_location
+    ver = env_acs2_data.container_details.ver
+    cy.random('CONTAINER_').then((number) => {
+        bar_code = number
+        cy.log("BAR CODE AND CONTAINER NAME IS : " + bar_code)
+    })
+})
+
+When('User creates a container by hit the container creation api', () => {
+    custom_container1.custom_container_creation('POST', container_creation_url, auth_token, ver, warehouse_location, bar_code)
+})
+
+Then('Status code should be "200"', () => {
+    cy.verify_response_value(custom_container1.custom_container_creation_status_code(), 200)
+})
+
+Then('Container should be created and barcode of container should be generated', () => {
+    container_number = custom_container1.custom_container_name()
+    cy.verify_response_value_not_null(container_number)
+    cy.log( " Container Number : "  + container_number)
+    
+})
+
+
 
