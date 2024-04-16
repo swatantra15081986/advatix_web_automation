@@ -59,6 +59,24 @@ Feature: INBOUND PROCESS IN ACS 2
         Scenario: After marked ASN "Arrived", status should be changed to "Arrived"
         Then Status of ASN should be changed to "Arrived"
 
+        Scenario: Create containers for receiving items
+        Given Container code, container name, Container Type, No of container required, length, width, height, cubic inches, max weight, temp storage areas
+        When Go to " Facility and Planning" tab and then " Manage FC" and then come to "Manage FC " button
+        And  Click on the "Add +" button to create new container
+        And  Select the " FC Name"
+        And  Type the "Container code"
+        And Type the " Container Name"
+        And Select the "Container Type"
+        And Type the value in "No of container required"
+        And Type the dimensions "L", "B", "H"
+        And Type the require "Cubic Inches"
+        And Type the "Max weight (lb)"
+        And Select the "Temp Storage Area"
+        And Open the " Network" tab to capture the network responses of container creation
+        And Click on the "Submit" button to create container 
+        And Store the "container code" number value in variable  from the response of network call button
+
+
    
         
 
