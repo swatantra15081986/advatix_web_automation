@@ -5,6 +5,8 @@ import custom_purchase_order from '../../../../cypress/custom/custom_acs2/custom
 const custom_purchase_order1 = new custom_purchase_order()
 import custom_asn from '../../../custom/custom_acs2/custom_inbound/custom_asn'
 const custom_asn1 = new custom_asn()
+import custom_receiver_app from '../../../../cypress/api_utilities/custom_api/custom_api_acs2/custom_api_inbound/custom_receiver_app'
+const custom_receiver_app1 = new custom_receiver_app()
 import custom_container from '../../../../cypress/api_utilities/custom_api/custom_api_acs2/custom_api_inbound/custom_container'
 const custom_container1 = new custom_container()
 import page_purchase_order from '../../../../cypress/page_objects/page_acs2/page_inbound/page_purchase_order'
@@ -27,7 +29,8 @@ var env_acs2_data, web_login_token
 var client_name, fc_name, customer_name, supplier_name, product_sku, product_name, product_qty
 var purchase_order_number_network, response_body, asn_number
 var container_creation_url, auth_token, warehouse_location, ver, bar_code
-var container_number
+var container_number, device_type, app_user_name, app_user_password, app_auth_token, app_login_url
+var advance_shipment_id, product_id
 
 before(function () {
     cy.readFile(env_acs2).then((data) => {
@@ -67,7 +70,7 @@ Given('Client, Customer, FC, Supplier, Scheduled date, Product details', () => {
 })
 
 When('Click on the "Manage Purchase Order" icon from the " Receiving" option under "inventory" button from  Dashboard menu items', () => {
-    custom_dashboard_menu1.custom_manage_purchase_order()
+    custom_dashboard_menu1.custom_manage_purchase_order({force:true})
 })
 
 And('Click on the " Add Purchase Order" button', () => {
@@ -156,10 +159,25 @@ Then('ASN receiving page should be opened', () => {
     cy.verify_table_data_contains(page_purchase_order1.page_asn_page(), "Manage Receiving/Return")
 })
 
+When('Open the network tab for save the " Advance Shipment ID" in vaiable', () => {
+    cy.network_intercept("POST", resources_purchase_order1.resources_asn_create(), "advance_shipment_id")
+})
+
 When('Search the ASN number in the ASN filter button by typing PO number in the ASN filter', () => {
     cy.filter_selection(page_purchase_order1.page_filter(), page_purchase_order1.page_asn_filter(), purchase_order_number_network, page_purchase_order1.page_po_filter_search())
 })
 
+When('Store the " Advance Shipment ID" and " Product id"  value in variable  from the response of network call button', () => {
+    cy.wait('@advance_shipment_id').then((interception) => {
+        // Assert that the response contains the expected data
+        response_body = interception.response.body
+        cy.log(" RESPONSE BODY IS : " + JSON.stringify(response_body), null, 2)
+        advance_shipment_id = response_body.responseObject.content[0].id
+        product_id = response_body.responseObject.content[0].advanceShipmentUnit[0].productId
+        cy.log("advance_shipment_id is: " + advance_shipment_id)
+        cy.log("product_id is: " + product_id)
+    })
+})
 Then('ASN Number should be same as the number of purchase order', () => {
     cy.verify_table_status(page_generic1.page_header(), page_generic1.page_data(), "ASN/Return Number ", purchase_order_number_network)
 })
@@ -203,14 +221,21 @@ Given('End points for container creation, Authorization Token, warehouse locatio
     auth_token = web_login_token
     warehouse_location = env_acs2_data.container_details.warehouse_location
     ver = env_acs2_data.container_details.ver
+    device_type = "Web"
     cy.random('CONTAINER_').then((number) => {
         bar_code = number
         cy.log("BAR CODE AND CONTAINER NAME IS : " + bar_code)
     })
+    cy.log("container_creation_url : " + container_creation_url)
+    cy.log("auth_token : " + auth_token)
+    cy.log("warehouse_location : " + warehouse_location)
+    cy.log("ver : " + ver)
+    cy.log("device_type : " + device_type)
+    cy.log(" bar_code: " + bar_code)
 })
 
 When('User creates a container by hit the container creation api', () => {
-    custom_container1.custom_container_creation('POST', container_creation_url, auth_token, ver, warehouse_location, bar_code)
+    custom_container1.custom_container_creation('POST', container_creation_url, auth_token, ver, device_type, warehouse_location, bar_code)
 })
 
 Then('Status code should be "200"', () => {
@@ -220,8 +245,28 @@ Then('Status code should be "200"', () => {
 Then('Container should be created and barcode of container should be generated', () => {
     container_number = custom_container1.custom_container_name()
     cy.verify_response_value_not_null(container_number)
-    cy.log( " Container Number : "  + container_number)
-    
+    cy.log(" Container Number : " + container_number)
+})
+
+Given('Receiver app user Credentials', () => {
+    app_login_url = env_acs2_data.api_web_base_url + resources_generic1.resources_acs2_login()
+    app_user_name = env_acs2_data.api_app_user_name
+    app_user_password = env_acs2_data.api_app_password
+    device_type = "Android"
+})
+
+When('Receiver user  hit the login Mobile app API by valid credentials', () => {
+    custom_receiver_app1.custom_receiver_app_login("POST", app_login_url, "", ver, device_type, app_user_password, app_user_name)
+})
+
+Then('Status code should be "200" after login', () => {
+    cy.verify_response_value(custom_receiver_app1.custom_receiver_app_login_status_code(), 200)
+})
+
+Then('Authorized token should be generated', () => {
+    app_auth_token = custom_receiver_app1.custom_access_token()
+    cy.log( " App token is : " + app_auth_token)
+    cy.verify_response_value_not_null(app_auth_token)
 })
 
 

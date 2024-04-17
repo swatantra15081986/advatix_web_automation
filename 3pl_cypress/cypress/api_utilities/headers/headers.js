@@ -1,9 +1,9 @@
 class headers {
 
-    headers_generic_web(auth_token, ver) {
+    headers_generic_web(auth_token, ver, device_type) {
         var headers_generic_web = {
             "Content-Type": "application/json",
-            "device-type": "Web",
+            "device-type": device_type,
             "auth-token": auth_token,
             "ver": ver
         }

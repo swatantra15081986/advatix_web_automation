@@ -3,6 +3,8 @@
     "acs2_user_id": "autouser",
     "acs2_user_password": "Info@124",
     "api_web_base_url": "https://acs2-uat.advatix.net",
+    "api_app_user_name": "autouser",
+    "api_app_password": "f3b9ce76700a5862a4c1201171a69109",
     "setup_flow": {
       "acs2_client": "autoclient",
       "acs2_fc": "DFWX1",

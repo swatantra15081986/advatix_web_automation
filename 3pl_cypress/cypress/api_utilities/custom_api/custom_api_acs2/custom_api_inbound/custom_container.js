@@ -6,13 +6,13 @@ var container_creation_response, container_creation_status_code
 
 class custom_container{
 
-    custom_container_creation(method, url, auth_token, ver, warehouse_location, bar_code){
+    custom_container_creation(method, url, auth_token, ver, device_type, warehouse_location, bar_code){
         cy.api({
             method: method,
             failOnStatusCode: false,
             form: false,
             url: url,
-            headers: headers1.headers_generic_web(auth_token, ver),
+            headers: headers1.headers_generic_web(auth_token, ver, device_type),
             body: payloads_container1.payloads_container_creation(warehouse_location, bar_code)
         }).then((response) => {
             container_creation_response = response.body
