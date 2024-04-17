@@ -28,9 +28,9 @@ pipeline {
     stages {
         stage('FRONTEND AUTOMATION CASES') {
             steps {
-                bat "echo %CD%"
+               // bat "echo %CD%"
                 dir('3pl_cypress') {
-                    bat "echo %CD%"
+                  //  bat "echo %CD%"
                     bat "npm cache clean --force"
                     bat "node delete-cucumber-json.js"
                     bat 'node delete-video.js'
@@ -45,8 +45,8 @@ pipeline {
                         try {
                             bat 'npm run %Script%'
                         } catch (err) {
-                            echo err.getMessage()
-                            echo "Some test cases are getting Failed"
+                           // echo err.getMessage()
+                          //  echo "Some test cases are getting Failed"
                         }
                     }
                     bat 'node cucumber-html-report.js'
