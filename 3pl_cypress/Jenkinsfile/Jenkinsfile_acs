@@ -3,12 +3,12 @@ import java.util.concurrent.TimeUnit
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 def jenkinsUrl = env.JENKINS_URL
-//echo "${jenkinsUrl}"
+echo "${jenkinsUrl}"
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
-println "jenkinsUrl: ${jenkinsUrl}"
-println "jobUrl: ${jobUrl}"
-println "jobName: ${jobName}"
+// println "jenkinsUrl: ${jenkinsUrl}"
+// println "jobUrl: ${jobUrl}"
+// println "jobName: ${jobName}"
 def jobDescription = jobUrl
 def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
@@ -28,9 +28,9 @@ pipeline {
     stages {
         stage('FRONTEND AUTOMATION CASES') {
             steps {
-               // bat "echo %CD%"
+                bat "echo %CD%"
                 dir('3pl_cypress') {
-                  //  bat "echo %CD%"
+                    bat "echo %CD%"
                     bat "npm cache clean --force"
                     bat "node delete-cucumber-json.js"
                     bat 'node delete-video.js'
@@ -45,8 +45,8 @@ pipeline {
                         try {
                             bat 'npm run %Script%'
                         } catch (err) {
-                           // echo err.getMessage()
-                          //  echo "Some test cases are getting Failed"
+                            echo err.getMessage()
+                            echo "Some test cases are getting Failed"
                         }
                     }
                     bat 'node cucumber-html-report.js'
@@ -117,7 +117,7 @@ pipeline {
                 color = 'green'
             }
 
-           // echo "${result}"
+            echo "${result}"
 
             try {
     def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
@@ -142,7 +142,7 @@ pipeline {
         status: "${result}"
     )
 } catch (err) {
-    //echo err.getMessage()
+    echo err.getMessage()
     // No need for this line: echo "Some test cases are getting Failed"
 }
 
