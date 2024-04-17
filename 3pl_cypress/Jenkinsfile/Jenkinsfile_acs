@@ -6,9 +6,9 @@ def jenkinsUrl = env.JENKINS_URL
 echo "${jenkinsUrl}"
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
-// println "jenkinsUrl: ${jenkinsUrl}"
-// println "jobUrl: ${jobUrl}"
-// println "jobName: ${jobName}"
+println "jenkinsUrl: ${jenkinsUrl}"
+println "jobUrl: ${jobUrl}"
+println "jobName: ${jobName}"
 def jobDescription = jobUrl
 def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
@@ -138,7 +138,7 @@ pipeline {
                   <p><strong> List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
                   <p><strong> Automation Test Cases Result report : </strong>  <a href="${BUILD_URL}/execution/node/7/ws/3pl_cypress/reports/index.html">Frontend Automation Cucumber Test Result</a></p>
                   <p><strong> Automation Test Cases Video link for reference  : </strong>  <a href="${env.BUILD_URL}/execution/node/7/ws/3pl_cypress/cypress/videos/">Click here to check the videos</a></p>
-                  <p><strong> Check logs :</strong>  <a href="${env.BUILD_URL}/console">Click here to check the console output logs</a></p> """,
+                  <p><strong> Check logs :</strong>  <a href="${env.BUILD_URL}/console">Click here to check the console output logs</a></p>""",
         status: "${result}"
     )
 } catch (err) {
