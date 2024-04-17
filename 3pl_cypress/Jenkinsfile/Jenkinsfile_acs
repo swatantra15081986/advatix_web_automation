@@ -117,7 +117,7 @@ pipeline {
                 color = 'green'
             }
 
-            echo "${result}"
+           // echo "${result}"
 
             try {
     def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
@@ -142,7 +142,7 @@ pipeline {
         status: "${result}"
     )
 } catch (err) {
-    echo err.getMessage()
+    //echo err.getMessage()
     // No need for this line: echo "Some test cases are getting Failed"
 }
 
