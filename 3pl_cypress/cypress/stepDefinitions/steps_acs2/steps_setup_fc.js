@@ -27,7 +27,7 @@ Given('ACS2 dashboard URL, Username and Password for login in ACS2 Dashboard', (
 })
 
 When('User clicks on Login button of ACS2 Dashboard after fill user name and password', () => {
-    cy.visit_url(dashboard_url)
+    cy.visit_url(dashboard_url, { timeout: 1000})
     custom_login1.custom_acs2_login(acs2_user_name, acs2_password)
 })
 

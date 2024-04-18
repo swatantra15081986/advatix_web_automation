@@ -14,6 +14,10 @@ class page_generic {
         return cy.get('.text-primary')
     }
 
+    page_button() {
+        return 'button'
+    }
+
     
 
 

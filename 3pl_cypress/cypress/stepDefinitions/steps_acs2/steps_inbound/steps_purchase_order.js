@@ -24,13 +24,14 @@ const resources_generic1 = new resources_generic()
 import resources_setup from '../../../../cypress/api_utilities/resources/resources_acs2/resources_inbound/resources_setup'
 const resources_setup1 = new resources_setup()
 const fixtures_inbound = require('../../../../cypress/fixtures/fixture_acs2/fixture_inbound.json')
+const fixture_setup = require('../../../../cypress/fixtures/fixture_acs2/fixture_setup.json')
 var env_acs2 = Cypress.env('env_acs2')
 var env_acs2_data, web_login_token
 var client_name, fc_name, customer_name, supplier_name, product_sku, product_name, product_qty
 var purchase_order_number_network, response_body, asn_number
 var container_creation_url, auth_token, warehouse_location, ver, bar_code
 var container_number, device_type, app_user_name, app_user_password, app_auth_token, app_login_url
-var advance_shipment_id, product_id
+var advance_shipment_id, product_id, receiving_url, area_code, product_upc_code, dashboard_url_asn
 
 before(function () {
     cy.readFile(env_acs2).then((data) => {
@@ -70,7 +71,7 @@ Given('Client, Customer, FC, Supplier, Scheduled date, Product details', () => {
 })
 
 When('Click on the "Manage Purchase Order" icon from the " Receiving" option under "inventory" button from  Dashboard menu items', () => {
-    custom_dashboard_menu1.custom_manage_purchase_order({force:true})
+    custom_dashboard_menu1.custom_manage_purchase_order({ force: true })
 })
 
 And('Click on the " Add Purchase Order" button', () => {
@@ -265,9 +266,72 @@ Then('Status code should be "200" after login', () => {
 
 Then('Authorized token should be generated', () => {
     app_auth_token = custom_receiver_app1.custom_access_token()
-    cy.log( " App token is : " + app_auth_token)
+    cy.log(" App token is : " + app_auth_token)
     cy.verify_response_value_not_null(app_auth_token)
 })
 
+Given('End points url for Receiving, product ID, advance shipment id, product , product quantity, container', () => {
+    receiving_url = env_acs2_data.api_web_base_url + resources_purchase_order1.resources_asn_receive()
+    product_id = product_id
+    advance_shipment_id = advance_shipment_id
+    product_qty = product_qty
+    area_code = container_number
+    product_upc_code = env_acs2_data.product_details.product_upc_number
+    device_type = "Android"
+    cy.log("receiving_url : " + receiving_url)
+    cy.log("advance_shipment_id : " + advance_shipment_id)
+    cy.log("receiving_url : " + receiving_url)
+    cy.log("product_qty : " + product_qty)
+    cy.log("area_code : " + area_code)
+    cy.log("product_upc_code : " + product_upc_code)
+    cy.log("device_type : " + device_type)
+})
+
+When('Receiver user  hit the receiving Mobile app API to put product quantity into container as "OK" bucket', () => {
+    custom_receiver_app1.custom_receiver_app_receive('POST', receiving_url, app_auth_token, ver, device_type, advance_shipment_id, product_qty,area_code, product_id, product_upc_code)
+})
+
+Then('Status code should be "200" after received', () => {
+    cy.verify_response_value(custom_receiver_app1.custom_receiver_app_receiving_status_code(), 200)
+})
+
+Then('" Inventory received successfully " message should be displayed', () => {
+    cy.verify_response_value_include(custom_receiver_app1.custom_success_received_message(), "Inventory received successfully")
+})
+
+When('Visit the url of " Manage recceiving Page"', () => {
+    dashboard_url_asn = env_acs2_data.base_url_acs2 + fixture_setup.setup_url[3]
+    cy.visit(dashboard_url_asn)
+})
+
+Then('Verify the status of ASN, it should be " Assigned "', () => {
+    cy.verify_table_status(page_generic1.page_header(), page_generic1.page_data(), "Status", fixtures_inbound.asn.status[2])
+})
+
+Then('Sequential ID should be generated and should be displayed in the " Sequential ID" column', () => {
+    cy.verify_table_status_not_null(page_generic1.page_header(), page_generic1.page_data(), "Seq ID")
+})
+
+When('Click on the "ASN Number"', () => {
+    cy.contains(purchase_order_number_network).click()
+})
+
+Then('"Receiving Unit" page should be opened', () => {
+    cy.verify_url_link("inventory/receiving-unit")
+})
+
+Then('Status of " receiving Unit" should be "Received"', () => {
+    cy.verify_table_data_expected_actual(page_asn1.page_receiving_unit_status(), fixtures_inbound.product.status[0])
+})
+
+When('Click on the "Move to Staging Area" and confirm', () => {
+    custom_asn1.custom__move_staging_area_button()
+    cy.contains_value(page_generic1.page_button(), page_asn1.page_button_confirm())
+    cy.wait(3000)
+})
+
+When('"Location name" should be displayed in the "staging area" column', () => {
+    cy.verify_table_data(page_asn1.page_stow_staging_column_value(), fc_name + '-')
+ })
 
 

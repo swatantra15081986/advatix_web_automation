@@ -5,7 +5,7 @@ const options = {
     theme: "foundation",
     jsonDir: "cypress/cucumber-json",  // ** Path of .json file **//
     output: "reports/cucumber_report.html",
-    name: "Testing Report",
+    name: "Web Automation Testing Report",
     brandTitle: "Test Results",
     columnLayout: 1,
     screenshotsDirectory: 'cypress/screenshots/',

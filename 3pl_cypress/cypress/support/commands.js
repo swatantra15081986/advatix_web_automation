@@ -12,7 +12,7 @@ Cypress.Commands.add("custom_verify_text_value", (selector, text_value) => {
 
 Cypress.Commands.add("verify_table_status", (selector1, selector2, header_name, header_value) => {
     cy.get(selector1).each(($id, index, $list) => {
-        if ($id.text() === header_name) {
+        if ($id.text().trim() === header_name) {
             cy.log($id.text())
             cy.get(selector2).eq(index).then(function ($status) {
                 const status = $status.text()
@@ -24,7 +24,7 @@ Cypress.Commands.add("verify_table_status", (selector1, selector2, header_name, 
 })
 
 Cypress.Commands.add("contains_value", (selector1, text_value) => {
-    cy.get(selector1).contains(text_value)
+    cy.get(selector1).contains(text_value).click()
 })
 
 Cypress.Commands.add("verify_iframe_table_status", (selector1, selector2, header_name, status1) => {
@@ -119,6 +119,14 @@ Cypress.Commands.add("verify_table_data", (selector, expected_value) => {
     })
 })
 
+Cypress.Commands.add("verify_table_data_expected_actual", (selector, expected_value) => {
+    cy.xpath(selector).then(($element) => {
+        var actual_value = $element.text()
+        // Further assertion or processing
+        expect(expected_value).to.include(actual_value)
+    })
+})
+
 Cypress.Commands.add("verify_table_data_css", (selector, index, expected_value) => {
     cy.get(selector).eq(index).then(($element) => {
         var actual_value = $element.text()
@@ -137,8 +145,8 @@ Cypress.Commands.add("verify_table_data_contains", (selector, expected_value) =>
 
 Cypress.Commands.add("verify_table_status_not_null", (selector1, selector2, header_name) => {
     cy.get(selector1).each(($id, index, $list) => {
-        if ($id.text() === header_name) {
-            cy.log($id.text())
+        if ($id.text().trim() === header_name) {
+            cy.log($id.text().trim())
             cy.get(selector2).eq(index).then(function ($status) {
                 const status = $status.text()
                 cy.log("header_value is :" + status)

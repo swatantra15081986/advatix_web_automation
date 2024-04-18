@@ -28,6 +28,26 @@ class page_asn {
         return "//td[contains(text(),'Arrived')]"
     }
 
+    page_assigned_status_path() {
+        return "Assigned"
+    }
+
+    page_receiving_unit_status() {
+        return "//table/tbody/tr/td[13]"
+    }
+
+    page_move_staging_area_button() {
+        return cy.xpath("//span[contains(text(),'Staging Area')]")
+    }
+
+    page_stow_staging_column_value(){
+        return "//table/tbody/tr/td[19]"
+    }
+
+    page_button_confirm(){
+        return 'Confirm'
+    }
+
 
   
 

@@ -1,5 +1,5 @@
 {
-    "setup_url": ["/login", "/orders/viewAllOrders", "/warehouselocations/manage-locations"],
+    "setup_url": ["/login", "/orders/viewAllOrders", "/warehouselocations/manage-locations", "inventory/receiving"],
     "fc_setup": {
         "country": "USA",
         "state": "AK",

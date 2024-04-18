@@ -18,6 +18,12 @@ class custom_asn {
         cy.wait(1000)
     }
 
+    custom__move_staging_area_button() {
+        page_asn1.page_move_staging_area_button().click()
+    }
+
+
+
 
 
 

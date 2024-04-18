@@ -19,7 +19,7 @@ Feature: INBOUND PROCESS IN ACS 2
         Then User should get logged in successfully on ASC2 Order dashboard Page
         And Store the token number value value in variable  from the response of network call button
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: Purchase Order should get created with desired qty that should be display on modal window
         Given Client, Customer, FC, Supplier, Scheduled date, Product details
         When Click on the "Manage Purchase Order" icon from the " Receiving" option under "inventory" button from  Dashboard menu items
@@ -80,14 +80,32 @@ Feature: INBOUND PROCESS IN ACS 2
         Given Receiver app user Credentials
         When Receiver user  hit the login Mobile app API by valid credentials
         Then Status code should be "200" after login
-    #     Then Authorized token should be generated
+        Then Authorized token should be generated
 
-    #     @sanity @regression
-    # Scenario: Receiver app user should be able to receive the quantity of products in the container by APIs '/receiving/api/v1/receiving/receiveInventory'
-    #     Given End points url for Receiving, product ID, advance shipment id, product , product quantity, container
-    #     When Receiver user  hit the receiving Mobile app API to put product quantity into container as "OK" bucket
-    #     Then Status code should be "200" after received.
-    #     Then Authorized token should be generated
+    @sanity @regression
+    Scenario: Receiver app user should be able to receive the quantity of products in the container by APIs '/receiving/api/v1/receiving/receiveInventory'
+        Given End points url for Receiving, product ID, advance shipment id, product , product quantity, container
+        When Receiver user  hit the receiving Mobile app API to put product quantity into container as "OK" bucket
+        Then Status code should be "200" after received
+        Then " Inventory received successfully " message should be displayed
+
+    @sanity @regression
+    Scenario: After Receiving, Verify the status of ASN in web, It should be "Assigned"
+        When Visit the url of " Manage recceiving Page"
+        When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
+        Then Verify the status of ASN, it should be " Assigned "
+        Then Sequential ID should be generated and should be displayed in the " Sequential ID" column
+
+    @sanity @regression
+    Scenario: After Receiving, Verify the status of Products in web, It should be "Received"
+        When Click on the "ASN Number"
+        Then "Receiving Unit" page should be opened
+        Then Status of " receiving Unit" should be "Received"
+
+    @sanity @regression
+    Scenario: Location should be add in " Stow Staging" after click on " Move to Staging Area "
+        When Click on the "Move to Staging Area" and confirm
+        Then "Location name" should be displayed in the "staging area" column
 
 
 
