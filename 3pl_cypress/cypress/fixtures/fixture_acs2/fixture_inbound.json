@@ -13,7 +13,8 @@
     },
     "product": {
         "status": [
-            "Received "
+            "Received ",
+            "Stowed"
         ]
     }
 }
