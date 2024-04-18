@@ -1,0 +1,11 @@
+
+**/.idea
+**/.DS_Store
+**/cypress/videos 
+**cypress/cucumber-json/**
+**/cucumber-json
+cypress/videos
+reports
+cypress/cucumber-json
+package-lock.json
+cypress/screenshots/

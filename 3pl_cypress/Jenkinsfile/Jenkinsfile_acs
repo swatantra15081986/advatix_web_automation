@@ -1,0 +1,151 @@
+def startTime = System.currentTimeMillis()
+import java.util.concurrent.TimeUnit
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+def jenkinsUrl = env.JENKINS_URL
+echo "${jenkinsUrl}"
+def jobUrl = env.JOB_URL
+def jobName = env.JOB_NAME
+println "jenkinsUrl: ${jenkinsUrl}"
+println "jobUrl: ${jobUrl}"
+println "jobName: ${jobName}"
+def jobDescription = jobUrl
+def redColor = 'red' // Color variable Red
+def greenColor = 'green' // Color variable Green
+def webhook_url = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
+def webhook_url2 = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/6f112b4b7531447688d295ec0ea48029/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
+pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        ansiColor('xterm')
+    }
+     agent any
+     tools {
+         nodejs "node"
+     }
+
+    stages {
+        stage('FRONTEND AUTOMATION CASES') {
+            steps {
+                bat "echo %CD%"
+                dir('3pl_cypress') {
+                    bat "echo %CD%"
+                    bat "npm cache clean --force"
+                    bat "node delete-cucumber-json.js"
+                    bat 'node delete-video.js'
+                    bat 'node delete-report.js'
+                    //bat 'node delete-node_modules.js'
+                    bat 'node delete-package-lock.js'
+                    bat 'node --version'
+                    bat 'npm i'
+                    bat 'node create-cucumber-json.js'
+                    bat 'node create-report.js'
+                    script {
+                        try {
+                            bat 'npm run %Script%'
+                        } catch (err) {
+                            echo err.getMessage()
+                            echo "Some test cases are getting Failed"
+                        }
+                    }
+                    bat 'node cucumber-html-report.js'
+                    bat 'node multiple-cucumber-html-report.js'
+                }
+            }
+        }
+
+        stage('PUBLISH CUCUMBER REPORT') {
+    steps {
+        script {
+            cucumber([
+                fileIncludePattern: '3pl_cypress/cypress/cucumber-json/**/*.json'
+            ])
+        }
+    }
+}
+
+  }
+    
+
+    post {
+    always {
+        script {
+            def jsonFileContents = readFile(file: '3pl_cypress/reports/cucumber_report.html.json')
+            def jsonFile = new groovy.json.JsonSlurper().parseText(jsonFileContents)
+
+            def passedScenarios = 0
+            def failedScenarios = 0
+            def skippedScenarios = 0
+
+            jsonFile.each { feature ->
+                feature.elements.each { scenario ->
+                    def status = "passed"
+                    scenario.steps.each { step ->
+                        switch (step.result.status) {
+                            case "failed":
+                                status = "failed"
+                                break
+                            case "skipped":
+                                if (status != "failed") {
+                                    status = "skipped"
+                                }
+                                break
+                        }
+                    }
+                    switch (status) {
+                        case "passed":
+                            passedScenarios++
+                            break
+                        case "skipped":
+                            skippedScenarios++
+                            break
+                        case "failed":
+                            failedScenarios++
+                            break
+                    }
+                }
+            }
+
+            def result = ''
+            def color = ''
+            if (failedScenarios > 0) {
+                result = " X X X X  FAIL XXXX  *  Please check console logs and cucumber report to check the failed cases "
+                color = 'red'
+            } else {
+                result = " PASS Below flows and API are working fine on Production"
+                color = 'green'
+            }
+
+            echo "${result}"
+
+            try {
+    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+    def itemDescription = item.getDescription()
+    def endTime = System.currentTimeMillis()
+    def duration = endTime - startTime
+    def durationString = String.format("%d min, %d sec",
+            TimeUnit.MILLISECONDS.toMinutes(duration),
+            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+    )
+    def JOB_NAME = "${env.JOB_NAME}"
+    office365ConnectorSend (
+        webhookUrl: "${webhook_url}",
+        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>Test Result :- ${result}  </strong></span></p>
+                  <p><strong> Execution Time : </strong>  ${durationString}</p>
+                  <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
+                  <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
+                  <p><strong> List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
+                  <p><strong> Automation Test Cases Result report : </strong>  <a href="${BUILD_URL}/execution/node/7/ws/3pl_cypress/reports/index.html">Frontend Automation Cucumber Test Result</a></p>
+                  <p><strong> Automation Test Cases Video link for reference  : </strong>  <a href="${env.BUILD_URL}/execution/node/7/ws/3pl_cypress/cypress/videos/">Click here to check the videos</a></p>
+                  <p><strong> Check logs :</strong>  <a href="${env.BUILD_URL}/console">Click here to check the console output logs</a></p> @automation_poc""",
+        status: "${result}"
+    )
+} catch (err) {
+    echo err.getMessage()
+    // No need for this line: echo "Some test cases are getting Failed"
+}
+
+        }
+    }
+}
+}

@@ -1,0 +1,19 @@
+{
+    "purchase_order": {
+        "status": [
+            "CREATED "
+        ]
+    },
+    "asn": {
+        "status": [
+            "CREATED ",
+            "Arrived",
+            "Assigned"
+        ]
+    },
+    "product": {
+        "status": [
+            "Received "
+        ]
+    }
+}
