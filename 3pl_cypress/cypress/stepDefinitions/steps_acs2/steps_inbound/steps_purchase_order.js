@@ -1,4 +1,5 @@
 import { And, Given, Then, When } from 'cypress-cucumber-preprocessor/steps'
+import neat_csv from 'neat-csv'
 import custom_dashboard_menu from '../../../../cypress/custom/custom_acs2/custom_inbound/custom_dashboard_menu'
 const custom_dashboard_menu1 = new custom_dashboard_menu()
 import custom_purchase_order from '../../../../cypress/custom/custom_acs2/custom_inbound/custom_purchase_order'
@@ -9,6 +10,8 @@ import custom_receiver_app from '../../../../cypress/api_utilities/custom_api/cu
 const custom_receiver_app1 = new custom_receiver_app()
 import custom_container from '../../../../cypress/api_utilities/custom_api/custom_api_acs2/custom_api_inbound/custom_container'
 const custom_container1 = new custom_container()
+import custom_put_away from '../../../../cypress/api_utilities/custom_api/custom_api_acs2/custom_api_inbound/custom_put_away'
+const custom_put_away1 = new custom_put_away()
 import page_purchase_order from '../../../../cypress/page_objects/page_acs2/page_inbound/page_purchase_order'
 const page_purchase_order1 = new page_purchase_order()
 import page_dashboard_menu from '../../../../cypress/page_objects/page_acs2/page_inbound/page_dashboard_menu'
@@ -25,13 +28,17 @@ import resources_setup from '../../../../cypress/api_utilities/resources/resourc
 const resources_setup1 = new resources_setup()
 const fixtures_inbound = require('../../../../cypress/fixtures/fixture_acs2/fixture_inbound.json')
 const fixture_setup = require('../../../../cypress/fixtures/fixture_acs2/fixture_setup.json')
+const folder_path = Cypress.config("fileServerFolder") + "/cypress/downloads"
 var env_acs2 = Cypress.env('env_acs2')
 var env_acs2_data, web_login_token
 var client_name, fc_name, customer_name, supplier_name, product_sku, product_name, product_qty
 var purchase_order_number_network, response_body, asn_number
 var container_creation_url, auth_token, warehouse_location, ver, bar_code
 var container_number, device_type, app_user_name, app_user_password, app_auth_token, app_login_url
-var advance_shipment_id, product_id, receiving_url, area_code, product_upc_code, dashboard_url_asn
+var advance_shipment_id, product_id, receiving_url, area_code, product_upc_code, dashboard_url_asn, staging_location
+var url_asn_assigned, put_away_list_id, put_away_url
+var downloaded_csv_file_name, csv_file_path, asn_csv_data, csv_asn_number, csv_asn_number_status
+var csv_asn_supplier_name
 
 before(function () {
     cy.readFile(env_acs2).then((data) => {
@@ -288,7 +295,7 @@ Given('End points url for Receiving, product ID, advance shipment id, product , 
 })
 
 When('Receiver user  hit the receiving Mobile app API to put product quantity into container as "OK" bucket', () => {
-    custom_receiver_app1.custom_receiver_app_receive('POST', receiving_url, app_auth_token, ver, device_type, advance_shipment_id, product_qty,area_code, product_id, product_upc_code)
+    custom_receiver_app1.custom_receiver_app_receive('POST', receiving_url, app_auth_token, ver, device_type, advance_shipment_id, product_qty, area_code, product_id, product_upc_code)
 })
 
 Then('Status code should be "200" after received', () => {
@@ -304,7 +311,7 @@ When('Visit the url of " Manage recceiving Page"', () => {
     cy.visit(dashboard_url_asn)
 })
 
-Then('Verify the status of ASN, it should be " Assigned "', () => {
+Then('Verify the status of ASN, it should be "Assigned"', () => {
     cy.verify_table_status(page_generic1.page_header(), page_generic1.page_data(), "Status", fixtures_inbound.asn.status[2])
 })
 
@@ -324,14 +331,106 @@ Then('Status of " receiving Unit" should be "Received"', () => {
     cy.verify_table_data_expected_actual(page_asn1.page_receiving_unit_status(), fixtures_inbound.product.status[0])
 })
 
+When('Open the " Network" tab to capture the network responses to extract the "location value"', () => {
+    cy.network_intercept("POST", resources_purchase_order1.resources_asn_staging_location(), "staging_location")
+})
+
+
 When('Click on the "Move to Staging Area" and confirm', () => {
     custom_asn1.custom__move_staging_area_button()
     cy.contains_value(page_generic1.page_button(), page_asn1.page_button_confirm())
     cy.wait(3000)
 })
 
+When('Store the "Staging location number" value in variable  from the response of network call button', () => {
+    cy.wait('@staging_location').then((interception) => {
+        // Assert that the response contains the expected data
+        response_body = interception.response.body
+        cy.log(" RESPONSE BODY IS : " + JSON.stringify(response_body), null, 2)
+        staging_location = response_body.responseObject[0].stagingAreaCode
+        cy.log("staging_location is: " + staging_location)
+    })
+})
+
 When('"Location name" should be displayed in the "staging area" column', () => {
-    cy.verify_table_data(page_asn1.page_stow_staging_column_value(), fc_name + '-')
- })
+    cy.verify_table_data(page_asn1.page_stow_staging_column_value(), staging_location)
+})
 
+When('Click on the "Back" button', () => {
+    cy.contains_value(page_generic1.page_button(), page_asn1.page_button_back())
+})
 
+Given('End points for ASN assigned and container', () => {
+    url_asn_assigned = env_acs2_data.api_web_base_url + resources_purchase_order1.resources_put_away_list()
+    container_number = container_number
+    cy.log(" url_asn_assigned " + url_asn_assigned)
+    cy.log(" container_number " + container_number)
+})
+
+When('Hit the API to get the putaway unit ID', () => {
+    custom_put_away1.custom_put_away_list('GET', url_asn_assigned, app_auth_token, ver, device_type, container_number)
+})
+
+Then('Put Away Unit ID should be generated', () => {
+    put_away_list_id = custom_put_away1.custom_put_away_list_id()
+    cy.verify_response_value_not_null(put_away_list_id)
+    cy.log(" put_away_list_id : " + put_away_list_id)
+})
+
+Given('End points url for put away, product ID, advance shipment id, product , product quantity, container, put_away_list', () => {
+    put_away_url = env_acs2_data.api_web_base_url + resources_purchase_order1.resources_put_away()
+    product_id = product_id
+    advance_shipment_id = advance_shipment_id
+    cy.log(" put_away_url : " + put_away_url)
+})
+
+When('User put away the quantity in the staging location', () => {
+    custom_put_away1.custom_put_away('PUT', put_away_url, app_auth_token, ver, device_type, container_number, advance_shipment_id, bar_code, put_away_list_id, staging_location, product_qty)
+})
+
+Then('Status code should be "200" after put away', () => {
+    cy.verify_response_value(custom_put_away1.custom_put_away_status_code(), 200)
+})
+
+Then('Status of " receiving Unit" should be "Stowed"', () => {
+    cy.verify_table_data_expected_actual(page_asn1.page_receiving_unit_status(), fixtures_inbound.product.status[1])
+})
+
+When('Click on the "Download" button and then select the pagination and then click', () => {
+    cy.contains_value(page_generic1.page_button(), page_generic1.page_download())
+    cy.contains_value(page_generic1.page_a(), page_generic1.page_pagination_10())
+})
+
+When('Extract the downloaded CSV file data', () => {
+    cy.wait(1000)
+    cy.task('extract_file_name', { folder_path: folder_path, file_extension: ".csv" }).then((file_name) => {
+        downloaded_csv_file_name = file_name.trim()
+        cy.log(" downloaded_csv_file_name is : " + downloaded_csv_file_name)
+        csv_file_path = folder_path + '/' + downloaded_csv_file_name
+        cy.log(" File path is : " + csv_file_path)
+    })
+    const file_path = csv_file_path
+    cy.log(" File path is : " + file_path)
+    cy.readFile(file_path).then(async (result_csv) => {
+        asn_csv_data = await neat_csv(result_csv)
+        cy.log(" csv data is  : " + JSON.stringify(asn_csv_data), null,2)
+    })
+})
+
+Then('Verify the "ASN Number" in CSV file, It should be same as just filtered ASN Number', () => {
+    csv_asn_number = asn_csv_data[0]["ASN/Return Number"].replace(/'/g, '')
+    cy.log(" ACTUAL CSV ASN NUMBER IS : " + csv_asn_number )
+    cy.verify_response_value_include_or(asn_number, csv_asn_number)
+})
+
+Then('Verify the "ASN status" in CSV file, It should be same as the web status of ASN', () => {
+    csv_asn_number_status = asn_csv_data[0]["Status"].replace(/'/g, '')
+    cy.log(" ACTUAL CSV ASN STATUS : " + csv_asn_number_status )
+    cy.verify_response_value_include_or(fixtures_inbound.asn.status[2], csv_asn_number_status)
+})
+
+Then('Verify the "Supplier_name" in CSV file, It should be same as the web status of ASN', () => {
+    csv_asn_supplier_name = asn_csv_data[0]["Supplier/Consumer"].replace(/'/g, '')
+    cy.log("ACTUAL CSV SUPPLIER NAME IS : " + csv_asn_supplier_name )
+    cy.verify_response_value_include_or(supplier_name, csv_asn_supplier_name)
+})

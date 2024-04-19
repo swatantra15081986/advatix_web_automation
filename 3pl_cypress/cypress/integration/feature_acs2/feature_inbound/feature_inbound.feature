@@ -11,7 +11,7 @@ Feature: INBOUND PROCESS IN ACS 2
 
 
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: User Login in ACS2.0 should be done successfully with correct User name and Password
         Given ACS2 dashboard URL, Username and Password for login in ACS2 Dashboard
         When  Open the " Network" tab to capture the network responses of login
@@ -19,7 +19,7 @@ Feature: INBOUND PROCESS IN ACS 2
         Then User should get logged in successfully on ASC2 Order dashboard Page
         And Store the token number value value in variable  from the response of network call button
 
-    @sanity @regression 
+    @sanity @regression
     Scenario: Purchase Order should get created with desired qty that should be display on modal window
         Given Client, Customer, FC, Supplier, Scheduled date, Product details
         When Click on the "Manage Purchase Order" icon from the " Receiving" option under "inventory" button from  Dashboard menu items
@@ -54,7 +54,7 @@ Feature: INBOUND PROCESS IN ACS 2
         And Save this ASN number for the future reference
 
     @sanity @regression
-    Scenario: Receiver should be able to mark the status of ASN to " Arrived " by "Change Status"
+    Scenario: Receiver should be able to mark the status of ASN to " Arrived " by "Change Status" and status of ASN should be changed to " Arrived"
         When Open the network tab for save the " Advance Shipment ID" in vaiable
         When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
         When Store the " Advance Shipment ID" and " Product id"  value in variable  from the response of network call button
@@ -63,9 +63,6 @@ Feature: INBOUND PROCESS IN ACS 2
         And Click on the " Submit " button for marked arrived
         Then Success Pop up should be displayed with "Updated" message
         And Click on "OK" button of pop up to close pop up
-
-    @sanity @regression
-    Scenario: After marked ASN "Arrived", status should be changed to "Arrived"
         Then Status of ASN should be changed to "Arrived"
 
     @sanity @regression
@@ -93,7 +90,7 @@ Feature: INBOUND PROCESS IN ACS 2
     Scenario: After Receiving, Verify the status of ASN in web, It should be "Assigned"
         When Visit the url of " Manage recceiving Page"
         When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
-        Then Verify the status of ASN, it should be " Assigned "
+        Then Verify the status of ASN, it should be "Assigned"
         Then Sequential ID should be generated and should be displayed in the " Sequential ID" column
 
     @sanity @regression
@@ -103,9 +100,52 @@ Feature: INBOUND PROCESS IN ACS 2
         Then Status of " receiving Unit" should be "Received"
 
     @sanity @regression
-    Scenario: Location should be add in " Stow Staging" after click on " Move to Staging Area "
+    Scenario: Location should be add in " Stow Staging" after click on " Move to Staging Area " and status of ASN should be remain same to " Assigned "
+        When Open the " Network" tab to capture the network responses to extract the "location value"
         When Click on the "Move to Staging Area" and confirm
+        When Store the "Staging location number" value in variable  from the response of network call button
         Then "Location name" should be displayed in the "staging area" column
+        When Click on the "Back" button
+        When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
+        Then Verify the status of ASN, it should be "Assigned"
+
+    @sanity @regression
+    Scenario: Hit the API to get the putaway unit ID '/api/v1/stow/asnAssignedContainerValidate'
+        Given End points for ASN assigned and container
+        When   Hit the API to get the putaway unit ID
+        Then Put Away Unit ID should be generated
+
+    @sanity @regression
+    Scenario: Stow user should be able to complete the " Put Away" successfully by APIs '/api/v1/stow/putAwaySuccessful?'
+        Given End points url for put away, product ID, advance shipment id, product , product quantity, container, put_away_list
+        When User put away the quantity in the staging location
+        Then Status code should be "200" after put away
+        #Then " Inventory received successfully " message should be displayed
+
+        @sanity @regression
+    Scenario: After Put Away, Verify the status of ASN in web, It should be "Assigned"
+        When Visit the url of " Manage recceiving Page"
+        When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
+        Then Verify the status of ASN, it should be "Assigned"
+        Then Sequential ID should be generated and should be displayed in the " Sequential ID" column
+
+    @sanity @regression
+    Scenario: After Put Away, Verify the status of Products in web, It should be "Stowed"
+        When Click on the "ASN Number"
+        Then "Receiving Unit" page should be opened
+        Then Status of " receiving Unit" should be "Stowed"
+
+        @sanity @regression 
+        Scenario: Download the CSV file from Download button and verify the ASN details in CSV file
+        When Visit the url of " Manage recceiving Page"
+        When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
+        When Click on the "Download" button and then select the pagination and then click
+        When Extract the downloaded CSV file data
+        Then Verify the "ASN Number" in CSV file, It should be same as just filtered ASN Number
+        Then Verify the "ASN status" in CSV file, It should be same as the web status of ASN
+        Then Verify the "Supplier_name" in CSV file, It should be same as the web status of ASN
+        
+
 
 
 

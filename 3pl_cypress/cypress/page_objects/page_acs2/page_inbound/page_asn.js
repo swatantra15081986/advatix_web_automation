@@ -47,6 +47,10 @@ class page_asn {
     page_button_confirm(){
         return 'Confirm'
     }
+    
+    page_button_back(){
+        return 'Back'
+    }
 
 
   

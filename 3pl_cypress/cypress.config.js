@@ -1,10 +1,11 @@
 const { defineConfig } = require("cypress");
-//const readXlsx = require('../api_automation/cypress/plugins/read-xlsx')
+const readXlsx = require('./cypress/plugins/read-xlsx')
 //const mongoDB  = require('../api_automation/cypress/plugins/read-mongo')
 const mongoDB  = require('./cypress/plugins/read-mongo')
 //const postgresqlDB  = require('./cypress/plugins/read-postgresql')
-const fs = require("fs-extra");
-const path = require("path");
+const extract_file_name = require('./cypress/plugins/extract_file_name')
+const fs = require("fs-extra")
+const path = require("path")
 const cucumber = require("cypress-cucumber-preprocessor").default;
 
 function getConfigurationByFile(file) {
@@ -46,17 +47,26 @@ module.exports = defineConfig({
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
       on("file:preprocessor", cucumber());
+
       on('task', {
         'mongoDB': mongoDB.mongodb_connection
       })
+
       on('task', {
         'genericMongoQuery': mongoDB.mongodb_connection_generic
       })
-      // on('task', {
-      //   'postgresqlDB': postgresqlDB.connectDb
-      // })
+
+      on('task', {
+       'read_excel': readXlsx.read_excel
+      })
+
+      on('task', {
+        'extract_file_name': extract_file_name.extract_file_name
+       })
+     
+
       require("cypress-terminal-report/src/installLogsPrinter")(on);
-      // accept a configFile value or use dev by default
+      // accept a configFile value or use uat by default
       const file = config.env.configFile || "uat";
       return getConfigurationByFile(file);  
     },
