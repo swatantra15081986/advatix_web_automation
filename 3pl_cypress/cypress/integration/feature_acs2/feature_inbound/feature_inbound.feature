@@ -11,7 +11,7 @@ Feature: INBOUND PROCESS IN ACS 2
 
 
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: User Login in ACS2.0 should be done successfully with correct User name and Password
         Given ACS2 dashboard URL, Username and Password for login in ACS2 Dashboard
         When  Open the " Network" tab to capture the network responses of login
@@ -134,6 +134,17 @@ Feature: INBOUND PROCESS IN ACS 2
         When Click on the "ASN Number"
         Then "Receiving Unit" page should be opened
         Then Status of " receiving Unit" should be "Stowed"
+
+        @sanity @regression 
+        Scenario: Download the CSV file from Download button and verify the ASN details in CSV file
+        When Visit the url of " Manage recceiving Page"
+        When Search the ASN number in the ASN filter button by typing PO number in the ASN filter
+        When Click on the "Download" button and then select the pagination and then click
+        When Extract the downloaded CSV file data
+        Then Verify the "ASN Number" in CSV file, It should be same as just filtered ASN Number
+        Then Verify the "ASN status" in CSV file, It should be same as the web status of ASN
+        Then Verify the "Supplier_name" in CSV file, It should be same as the web status of ASN
+        
 
 
 

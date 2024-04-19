@@ -1,4 +1,5 @@
 import { And, Given, Then, When } from 'cypress-cucumber-preprocessor/steps'
+import neat_csv from 'neat-csv'
 import custom_dashboard_menu from '../../../../cypress/custom/custom_acs2/custom_inbound/custom_dashboard_menu'
 const custom_dashboard_menu1 = new custom_dashboard_menu()
 import custom_purchase_order from '../../../../cypress/custom/custom_acs2/custom_inbound/custom_purchase_order'
@@ -27,6 +28,7 @@ import resources_setup from '../../../../cypress/api_utilities/resources/resourc
 const resources_setup1 = new resources_setup()
 const fixtures_inbound = require('../../../../cypress/fixtures/fixture_acs2/fixture_inbound.json')
 const fixture_setup = require('../../../../cypress/fixtures/fixture_acs2/fixture_setup.json')
+const folder_path = Cypress.config("fileServerFolder") + "/cypress/downloads"
 var env_acs2 = Cypress.env('env_acs2')
 var env_acs2_data, web_login_token
 var client_name, fc_name, customer_name, supplier_name, product_sku, product_name, product_qty
@@ -35,6 +37,8 @@ var container_creation_url, auth_token, warehouse_location, ver, bar_code
 var container_number, device_type, app_user_name, app_user_password, app_auth_token, app_login_url
 var advance_shipment_id, product_id, receiving_url, area_code, product_upc_code, dashboard_url_asn, staging_location
 var url_asn_assigned, put_away_list_id, put_away_url
+var downloaded_csv_file_name, csv_file_path, asn_csv_data, csv_asn_number, csv_asn_number_status
+var csv_asn_supplier_name
 
 before(function () {
     cy.readFile(env_acs2).then((data) => {
@@ -364,7 +368,7 @@ Given('End points for ASN assigned and container', () => {
 })
 
 When('Hit the API to get the putaway unit ID', () => {
-custom_put_away1.custom_put_away_list('GET', url_asn_assigned, app_auth_token, ver, device_type, container_number)
+    custom_put_away1.custom_put_away_list('GET', url_asn_assigned, app_auth_token, ver, device_type, container_number)
 })
 
 Then('Put Away Unit ID should be generated', () => {
@@ -381,7 +385,7 @@ Given('End points url for put away, product ID, advance shipment id, product , p
 })
 
 When('User put away the quantity in the staging location', () => {
-    custom_put_away1.custom_put_away('PUT', put_away_url, app_auth_token, ver, device_type, container_number, advance_shipment_id, bar_code, put_away_list_id, staging_location, product_qty )
+    custom_put_away1.custom_put_away('PUT', put_away_url, app_auth_token, ver, device_type, container_number, advance_shipment_id, bar_code, put_away_list_id, staging_location, product_qty)
 })
 
 Then('Status code should be "200" after put away', () => {
@@ -392,3 +396,41 @@ Then('Status of " receiving Unit" should be "Stowed"', () => {
     cy.verify_table_data_expected_actual(page_asn1.page_receiving_unit_status(), fixtures_inbound.product.status[1])
 })
 
+When('Click on the "Download" button and then select the pagination and then click', () => {
+    cy.contains_value(page_generic1.page_button(), page_generic1.page_download())
+    cy.contains_value(page_generic1.page_a(), page_generic1.page_pagination_10())
+})
+
+When('Extract the downloaded CSV file data', () => {
+    cy.wait(1000)
+    cy.task('extract_file_name', { folder_path: folder_path, file_extension: ".csv" }).then((file_name) => {
+        downloaded_csv_file_name = file_name.trim()
+        cy.log(" downloaded_csv_file_name is : " + downloaded_csv_file_name)
+        csv_file_path = folder_path + '/' + downloaded_csv_file_name
+        cy.log(" File path is : " + csv_file_path)
+    })
+    const file_path = csv_file_path
+    cy.log(" File path is : " + file_path)
+    cy.readFile(file_path).then(async (result_csv) => {
+        asn_csv_data = await neat_csv(result_csv)
+        cy.log(" csv data is  : " + JSON.stringify(asn_csv_data), null,2)
+    })
+})
+
+Then('Verify the "ASN Number" in CSV file, It should be same as just filtered ASN Number', () => {
+    csv_asn_number = asn_csv_data[0]["ASN/Return Number"].replace(/'/g, '')
+    cy.log(" ACTUAL CSV ASN NUMBER IS : " + csv_asn_number )
+    cy.verify_response_value_include_or(asn_number, csv_asn_number)
+})
+
+Then('Verify the "ASN status" in CSV file, It should be same as the web status of ASN', () => {
+    csv_asn_number_status = asn_csv_data[0]["Status"].replace(/'/g, '')
+    cy.log(" ACTUAL CSV ASN STATUS : " + csv_asn_number_status )
+    cy.verify_response_value_include_or(fixtures_inbound.asn.status[2], csv_asn_number_status)
+})
+
+Then('Verify the "Supplier_name" in CSV file, It should be same as the web status of ASN', () => {
+    csv_asn_supplier_name = asn_csv_data[0]["Supplier/Consumer"].replace(/'/g, '')
+    cy.log("ACTUAL CSV SUPPLIER NAME IS : " + csv_asn_supplier_name )
+    cy.verify_response_value_include_or(supplier_name, csv_asn_supplier_name)
+})
