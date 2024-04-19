@@ -18,6 +18,18 @@ class page_generic {
         return 'button'
     }
 
+    page_download() {
+        return 'Download'
+    }
+
+    page_a() {
+        return 'a'
+    }
+
+    page_pagination_10() {
+        return '10'
+    }
+
     
 
 

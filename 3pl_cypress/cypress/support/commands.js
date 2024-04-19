@@ -15,7 +15,7 @@ Cypress.Commands.add("verify_table_status", (selector1, selector2, header_name, 
         if ($id.text().trim() === header_name) {
             cy.log($id.text())
             cy.get(selector2).eq(index).then(function ($status) {
-                const status = $status.text()
+                const status = $status.text().trim()
                 cy.log("header_value is :" + status)
                 expect(status).to.include(header_value)
             })
@@ -148,7 +148,7 @@ Cypress.Commands.add("verify_table_status_not_null", (selector1, selector2, head
         if ($id.text().trim() === header_name) {
             cy.log($id.text().trim())
             cy.get(selector2).eq(index).then(function ($status) {
-                const status = $status.text()
+                const status = $status.text().trim()
                 cy.log("header_value is :" + status)
                 expect(status).to.not.be.null
             })
