@@ -4,6 +4,7 @@ const readXlsx = require('./cypress/plugins/read-xlsx')
 const mongoDB  = require('./cypress/plugins/read-mongo')
 //const postgresqlDB  = require('./cypress/plugins/read-postgresql')
 const extract_file_name = require('./cypress/plugins/extract_file_name')
+const write_excel = require('./cypress/plugins/write_excel')
 const fs = require("fs-extra")
 const path = require("path")
 const cucumber = require("cypress-cucumber-preprocessor").default;
@@ -63,7 +64,10 @@ module.exports = defineConfig({
       on('task', {
         'extract_file_name': extract_file_name.extract_file_name
        })
-     
+       
+       on('task', {
+        'write_excel': write_excel.write_excel
+       }) 
 
       require("cypress-terminal-report/src/installLogsPrinter")(on);
       // accept a configFile value or use uat by default
