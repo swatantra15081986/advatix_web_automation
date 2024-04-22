@@ -11,7 +11,7 @@ Feature: INBOUND PROCESS IN ACS 2
 
 
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: User Login in ACS2.0 should be done successfully with correct User name and Password
         Given ACS2 dashboard URL, Username and Password for login in ACS2 Dashboard
         When  Open the " Network" tab to capture the network responses of login
@@ -41,6 +41,7 @@ Feature: INBOUND PROCESS IN ACS 2
     @sanity @regression
     Scenario: Newly created Purchase Order should display in top of the list along with Approve hyperlink in Approve column
         When Close the purchase order modal window
+        When Search the PO number in the PO filter button
         Then Purchase order should be displayed in the top of the list
 
     @sanity @regression
@@ -145,10 +146,7 @@ Feature: INBOUND PROCESS IN ACS 2
         Then Verify the "ASN status" in CSV file, It should be same as the web status of ASN
         Then Verify the "Supplier_name" in CSV file, It should be same as the web status of ASN
         
-@focus
-     @sanity @regression  
-     Scenario: Write excel  
-        When write excel
+  
 
 
 

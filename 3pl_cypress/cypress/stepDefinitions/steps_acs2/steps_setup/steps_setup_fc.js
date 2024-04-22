@@ -1,11 +1,11 @@
 import { And, Given, Then, When } from 'cypress-cucumber-preprocessor/steps'
-import custom_login from '../../../cypress/custom/custom_acs2/custom_login'
+import custom_login from '../../../../cypress/custom/custom_acs2/custom_login'
 const custom_login1 = new custom_login()
-import custom_fc from '../../custom/custom_acs2/custom_fc'
+import custom_fc from '../../../../cypress/custom/custom_acs2/custom_fc'
 const custom_fc1 = new custom_fc()
-import page_fc from '../../../cypress/page_objects/page_acs2/page_fc'
+import page_fc from '../../../../cypress/page_objects/page_acs2/page_fc'
 const page_fc1 = new page_fc()
-const fixture_setup = require('../../../cypress/fixtures/fixture_acs2/fixture_setup.json')
+const fixture_setup = require('../../../../cypress/fixtures/fixture_acs2/fixture_setup.json')
 var env_acs2 = Cypress.env('env_acs2')
 var env_acs2_data, acs2_user_name, acs2_password, dashboard_url, facility_url
 var fc_name, fc_country, fc_state, fc_city, fc_address, fc_postal_code, fc_email, fc_mobile

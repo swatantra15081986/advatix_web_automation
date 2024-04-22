@@ -51,11 +51,6 @@ Cypress.Commands.add("random", (prefix) => {
     return prefix + random
 })
 
-Cypress.Commands.add("upload_file", (selector, file_path) => {
-    selector.attachFile(file_path, { encoding: 'utf-8' })
-
-})
-
 Cypress.Commands.add("extract_text_xpath", (selector) => {
     cy.xpath(selector).then(async ($e2, index, $list) => {
         var text_value = $e2.text()
@@ -169,10 +164,11 @@ Cypress.Commands.add("network_response", (event_name) => {
 })
 
 Cypress.Commands.add("filter_selection", (filter_selector, module_selector, module_number, search_selector) => {
-    filter_selector.click()
+    filter_selector.click({force:true})
+    cy.wait(1000)
     module_selector.clear()
-    module_selector.type(module_number)
-    search_selector.click()
+    module_selector.type(module_number, {force:true})
+    search_selector.click({force:true})
     cy.wait(3000) // putting wait for successfully applied filter
 })
 
@@ -208,6 +204,14 @@ Cypress.Commands.add("verify_response_value_include_or", (expected_response_key_
 
 Cypress.Commands.add("verify_response_value_not_null", (actual_response_key_value) => {
     expect(actual_response_key_value).to.not.be.null
+})
+
+Cypress.Commands.add("attach_excel", (selector, fixture_excel_file_path) => {
+    selector.attachFile(fixture_excel_file_path, { encoding: 'utf-8' })
+})
+
+Cypress.Commands.add("verify_button_visible", (selector) => {
+    selector.should('be.enabled')
 })
 
 

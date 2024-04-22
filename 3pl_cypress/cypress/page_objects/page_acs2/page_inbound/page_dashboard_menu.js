@@ -16,7 +16,32 @@ class page_dashboard_menu {
         return cy.get('[href="/acs20/inventory/managepo"]').eq(1)
     }
 
- 
+    page_admin_support() {
+        return cy.get('[id="Admin Support icon"]')
+    }
+
+    page_support() {
+        return cy.get('[id="Support"]')
+    }
+
+    page_wms_location() {
+        return cy.get('[id="Bulk Uploads WMS Location"]')
+    }
+
+    page_facility_icon() {
+        return cy.get('[id="Facility & Settings icon"]')
+    }
+
+    page_facility() {
+        return cy.get('[id="FC"]')
+    }
+
+    page_manage_bin() {
+        return cy.get('[id="Manage Bin"]')
+    }
+
+
+
 
 
 

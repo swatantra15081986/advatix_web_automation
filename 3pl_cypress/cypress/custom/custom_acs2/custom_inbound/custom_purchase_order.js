@@ -52,7 +52,6 @@ class custom_purchase_order {
     custom_close_button() {
         page_purchase_order1.page_close_button().click({ force: true })
         cy.wait(1000)
-
     }
 
     custom_po_search(purchase_order_number) {
