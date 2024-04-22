@@ -20,5 +20,9 @@
        "container_details": {
         "ver": "1.0",
         "warehouse_location": "1"
-         }
+         },
+         "excel_upload_files_path": {
+          "fixture_location": "fixture_acs2/uat_excel/location_upload.xlsx"
+           }
+
   }

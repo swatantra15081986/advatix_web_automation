@@ -9,7 +9,11 @@
         "e_mail": "swatantra.srivastava@advatix.com",
         "mobile": "7042773602",
         "fc_code" : ""
-
+      },
+      "location_excel_file": {
+        "location_name_cell": "H2",
+        "bar_code_name_shell": "I2",
+        "location_upload_sheet_name": "WMSLocationsPlan"
       }
     } 
   
