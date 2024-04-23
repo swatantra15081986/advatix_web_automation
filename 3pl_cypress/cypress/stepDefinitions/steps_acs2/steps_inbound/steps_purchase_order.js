@@ -409,9 +409,8 @@ When('Extract the downloaded CSV file data', () => {
         csv_file_path = folder_path + '/' + downloaded_csv_file_name
         cy.log(" File path is : " + csv_file_path)
     })
-    const file_path = csv_file_path
-    cy.log(" File path is : " + file_path)
-    cy.readFile(file_path).then(async (result_csv) => {
+    cy.log(" File path is : " + csv_file_path)
+    cy.readFile(csv_file_path).then(async (result_csv) => {
         asn_csv_data = await neat_csv(result_csv)
         cy.log(" csv data is  : " + JSON.stringify(asn_csv_data), null,2)
     })

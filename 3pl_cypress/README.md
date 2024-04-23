@@ -18,8 +18,8 @@
 * npm install --save-dev cypress-cucumber-preprocessor
 * npm install cucumber-html-reporter --save-dev
 * node_modules\.bin\cypress run cypress run --headed --browser=chrome --env configFile=demo
-* node_modules/.bin/cypress run cypress run --headed --browser=chrome --spec cypress/integration/Feature_3PL/**/*  --env configFile=demo
-* node_modules/.bin/cypress run cypress run --headed --browser=chrome --spec cypress/integration/Feature_3PL/**/*  --env configFile=demo -e TAGS='@sanity'
+* node_modules/.bin/cypress run cypress run --headed --browser=chrome --spec cypress\integration\feature_acs2\feature_inbound/  --env configFile=demo
+
 
 
 ### Contribution guidelines ###
