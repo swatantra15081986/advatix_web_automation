@@ -131,7 +131,7 @@ pipeline {
     def JOB_NAME = "${env.JOB_NAME}"
     office365ConnectorSend (
         webhookUrl: "${webhook_url}",
-        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>@${BUILD_USER} Test Result :- ${result}  </strong></span></p>
+        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>@${buildUser} Test Result :- ${result}  </strong></span></p>
                   <p><strong> Execution Time : </strong>  ${durationString}</p>
                   <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
                   <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
