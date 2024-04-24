@@ -47,7 +47,7 @@ pipeline {
                             echo "Some test cases are getting Failed"
                         }
                     }
-                    bat 'node cucumber-html-report.js'
+                    //bat 'node cucumber-html-report.js'
                     bat 'node multiple-cucumber-html-report.js'
                 }
             }
@@ -111,7 +111,7 @@ pipeline {
                 result = " X X X X  FAIL XXXX  *  Please check console logs and cucumber report to check the failed cases "
                 color = 'red'
             } else {
-                result = " PASS Below flows and API are working fine on Production"
+                result = " PASS !!!!!          Below flows and API are working fine on Production"
                 color = 'green'
             }
 
