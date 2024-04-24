@@ -1,4 +1,4 @@
-Feature: Location Creation in ACS 2
+Feature: LOCATION CREATION IN ACS-2.0
 
     Feature Description
     Location creation for the put away the products
