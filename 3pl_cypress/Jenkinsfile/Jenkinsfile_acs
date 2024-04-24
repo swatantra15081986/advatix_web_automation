@@ -47,7 +47,7 @@ pipeline {
                             echo "Some test cases are getting Failed"
                         }
                     }
-                    //bat 'node cucumber-html-report.js'
+                    bat 'node cucumber-html-report.js'
                     bat 'node multiple-cucumber-html-report.js'
                 }
             }
