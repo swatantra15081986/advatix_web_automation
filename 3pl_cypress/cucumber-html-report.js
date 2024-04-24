@@ -2,7 +2,7 @@
 //Available HTML themes: ['bootstrap', 'hierarchy', 'foundation', 'simple']
 const reporter = require("cucumber-html-reporter");
 const options = {
-    theme: "foundation",
+    theme: "bootstrap",
     jsonDir: "cypress/cucumber-json",  // ** Path of .json file **//
     output: "reports/cucumber_report.html",
     name: "Web Automation Testing Report",
