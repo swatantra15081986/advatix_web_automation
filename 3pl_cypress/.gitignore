@@ -9,3 +9,4 @@ reports
 cypress/cucumber-json
 package-lock.json
 cypress/screenshots/
+cypress/downloads/
