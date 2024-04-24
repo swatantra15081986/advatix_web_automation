@@ -14,6 +14,7 @@ def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/322f515cc5ae4058af8f7011cec4447d/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 def webhook_url2 = "https://advatix1.webhook.office.com/webhookb2/44039357-ceb9-421f-80be-d26a105bc212@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/6f112b4b7531447688d295ec0ea48029/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
+def buildUser = env.BUILD_USER // Retrieve the username of the user who triggered the build
 pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
@@ -130,7 +131,7 @@ pipeline {
     def JOB_NAME = "${env.JOB_NAME}"
     office365ConnectorSend (
         webhookUrl: "${webhook_url}",
-        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>Test Result :- ${result}  </strong></span></p>
+        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>@${BUILD_USER} Test Result :- ${result}  </strong></span></p>
                   <p><strong> Execution Time : </strong>  ${durationString}</p>
                   <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
                   <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
