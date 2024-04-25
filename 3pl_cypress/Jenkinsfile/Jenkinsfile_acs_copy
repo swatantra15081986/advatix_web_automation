@@ -24,6 +24,23 @@ def greenColor = 'green' // Color variable Green
 
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/87b0cd1f-00b1-42bc-8600-c7428f884919@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/c0f01557dd7f4012a9efeb7be7a90480/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 
+// Define the method before usage
+def findFailedScenarios(cucumberJsonDir) {
+    def failedScenarios = []
+    def jsonFiles = findFiles(glob: "${cucumberJsonDir}/**/*.json")
+    jsonFiles.each { file ->
+        def json = readJSON file
+        json.each { feature ->
+            feature.elements.each { element ->
+                if (element.steps.find { it.result.status == 'failed' }) {
+                    failedScenarios.add(feature.name.replaceAll('[^a-zA-Z0-9]', '_'))
+                }
+            }
+        }
+    }
+    return failedScenarios.unique()
+}
+
 pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
@@ -161,8 +178,8 @@ pipeline {
                     office365ConnectorSend (
                         webhookUrl: "${webhook_url}",
                         message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>Test Result :- ${result}  </strong></span></p>
+                                  <p><strong> Jenkins Build run by  : </strong>  ${jenkins_build_user_name}</p>
                                   <p><strong> Execution Time : </strong>  ${durationString}</p>
-                                  <p><strong> Jenkins Build User  : </strong>  ${jenkins_build_user_name}</p>
                                   <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
                                   <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
                                   <p><strong> List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
