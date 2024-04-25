@@ -15,8 +15,6 @@ println "jobName: ${jobName}"
 def jobDescription = jobUrl
 def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
-def current_build_url = env.BUILD_URL
-def html_page_url = "${current_build_url}execution/node/8/ws/3pl_cypress/reports/index.html"
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/87b0cd1f-00b1-42bc-8600-c7428f884919@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/c0f01557dd7f4012a9efeb7be7a90480/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 pipeline {
     options {
@@ -45,7 +43,6 @@ pipeline {
                     bat 'node utilities/create-cucumber-json.js'
                     bat 'node utilities/create-report.js'
                     script {
-                       
                         try {
                             bat 'npm run %Script%'
                         } catch (err) {
@@ -53,16 +50,8 @@ pipeline {
                             echo "Some test cases are getting Failed"
                         }
                     }
-                     // Output the iframe with dynamic URL
-                     echo """
-                    <iframe src="${html_page_url}" sandbox="allow-scripts"></iframe>
-                    """
                     bat 'node utilities/cucumber-html-report.js'
                     bat 'node utilities/multiple-cucumber-html-report.js'
-
-
-                   
-                   
                 }
             }
         }
