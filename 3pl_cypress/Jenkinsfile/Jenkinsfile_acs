@@ -50,6 +50,16 @@ pipeline {
                             echo "Some test cases are getting Failed"
                         }
                     }
+                    // Get the current build's URL
+                    def current_build_url = env.BUILD_URL
+                    
+                    // Construct the URL for the HTML page
+                    def html_page_url = "${current_build_url}execution/node/8/ws/3pl_cypress/reports/index.html"
+                    
+                    // Output the iframe with dynamic URL
+                    echo """
+                    <iframe src="${html_page_url}" sandbox="allow-scripts"></iframe>
+                    """
                     bat 'node utilities/cucumber-html-report.js'
                     bat 'node utilities/multiple-cucumber-html-report.js'
                 }
