@@ -6,7 +6,7 @@ def jenkinsUrl = env.JENKINS_URL
 echo "${jenkinsUrl}"
 def cause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
 echo "userName: ${cause.userName}"
-def jenkins_build_user_name = userName
+def jenkins_build_user_name = cause.userName
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
 println "jenkinsUrl: ${jenkinsUrl}"
