@@ -27,19 +27,25 @@ def webhook_url = "https://advatix1.webhook.office.com/webhookb2/87b0cd1f-00b1-4
 // Define the method before usage
 def findFailedScenarios(cucumberJsonDir) {
     def failedScenarios = []
-    def jsonFiles = findFiles(glob: "${cucumberJsonDir}/**/*.json")
+    def jsonFiles = sh(script: "find ${cucumberJsonDir} -name '*.json'", returnStdout: true).trim().split('\n')
     jsonFiles.each { file ->
-        def json = readJSON file
-        json.each { feature ->
-            feature.elements.each { element ->
-                if (element.steps.find { it.result.status == 'failed' }) {
-                    failedScenarios.add(feature.name.replaceAll('[^a-zA-Z0-9]', '_'))
+        if (fileExists(file)) {
+            def jsonContent = readFile(file: file)
+            def json = readJSON text: jsonContent
+            json.each { feature ->
+                feature.elements.each { element ->
+                    if (element.steps.find { it.result.status == 'failed' }) {
+                        failedScenarios.add(feature.name.replaceAll('[^a-zA-Z0-9]', '_'))
+                    }
                 }
             }
+        } else {
+            echo "File does not exist: ${file}"
         }
     }
     return failedScenarios.unique()
 }
+
 
 pipeline {
     options {
