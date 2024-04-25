@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const folderPath = path.join(__dirname, 'cypress/cucumber-json');
+const folderPath = 'cypress/cucumber-json'
 
 // Function to delete folder recursively
 function deleteFolderRecursive(folderPath) {
