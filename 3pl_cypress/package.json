@@ -6,10 +6,9 @@
   "scripts": {
     "acs2_staging": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=staging",
     "acs2_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=uat",
-    "acs2_uat_inbound": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_inbound/     --env configFile=uat",
-    "acs2_uat_setup": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_setup/     --env configFile=uat",
-    "acs2_uat_cloud": "npx cypress run  --record --key 67b36bfd-89d9-4134-9769-a92b6a06925a   --browser chrome   --spec cypress/integration/feature_acs2/feature_inbound/      --env configFile=uat"
-       },
+    "acs2_inbound_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_inbound/     --env configFile=uat",
+    "acs2_setup_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_setup/     --env configFile=uat"
+  },
   "author": "Swatantra",
   "license": "ISC",
   "dependencies": {
