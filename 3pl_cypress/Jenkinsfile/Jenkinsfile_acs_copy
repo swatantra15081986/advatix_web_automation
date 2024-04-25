@@ -2,203 +2,153 @@ def startTime = System.currentTimeMillis()
 import java.util.concurrent.TimeUnit
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-
 def jenkinsUrl = env.JENKINS_URL
 echo "${jenkinsUrl}"
-
 def cause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
 echo "userName: ${cause.userName}"
-def jenkins_build_user_name = cause.userName
-
+def jenkins_build_user_name = userName
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
-
 println "jenkinsUrl: ${jenkinsUrl}"
 println "jobUrl: ${jobUrl}"
 println "jobName: ${jobName}"
-
 def jobDescription = jobUrl
-
 def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
-
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/87b0cd1f-00b1-42bc-8600-c7428f884919@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/c0f01557dd7f4012a9efeb7be7a90480/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
-
-// Define the method before usage
-def findFailedScenarios(cucumberJsonDir) {
-    def failedScenarios = []
-    def jsonFiles = sh(script: "find ${cucumberJsonDir} -name '*.json'", returnStdout: true).trim().split('\n')
-    jsonFiles.each { file ->
-        if (fileExists(file)) {
-            def jsonContent = readFile(file: file)
-            def json = readJSON text: jsonContent
-            json.each { feature ->
-                feature.elements.each { element ->
-                    if (element.steps.find { it.result.status == 'failed' }) {
-                        failedScenarios.add(feature.name.replaceAll('[^a-zA-Z0-9]', '_'))
-                    }
-                }
-            }
-        } else {
-            echo "File does not exist: ${file}"
-        }
-    }
-    return failedScenarios.unique()
-}
-
-
 pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         ansiColor('xterm')
     }
-    agent any
-    tools {
-        nodejs "node"
-    }
+     agent any
+     tools {
+         nodejs "node"
+     }
 
     stages {
         stage('FRONTEND AUTOMATION CASES') {
             steps {
-                script {
+                bat "echo %CD%"
+                dir('3pl_cypress') {
                     bat "echo %CD%"
-                    dir('3pl_cypress') {
-                        bat "echo %CD%"
-                        bat "npm cache clean --force"
-                        bat "node delete-cucumber-json.js"
-                        bat 'node delete-video.js'
-                        bat 'node delete-report.js'
-                        //bat 'node delete-node_modules.js'
-                        bat 'node delete-package-lock.js'
-                        bat 'node --version'
-                        bat 'npm i'
-                        bat 'node create-cucumber-json.js'
-                        bat 'node create-report.js'
-                        script {
-                            try {
-                                bat 'npm run %Script%'
-                            } catch (err) {
-                                echo err.getMessage()
-                                echo "Some test cases are getting Failed"
-                            }
+                    bat "npm cache clean --force"
+                    bat "node utilities/delete-cucumber-json.js"
+                    bat 'node utilities/delete-video.js'
+                    bat 'node utilities/delete-report.js'
+                    //bat 'node delete-node_modules.js'
+                    bat 'node utilities/delete-package-lock.js'
+                    bat 'node --version'
+                    bat 'npm i'
+                    bat 'node utilities/create-cucumber-json.js'
+                    bat 'node utilities/create-report.js'
+                    script {
+                        try {
+                            bat 'npm run %Script%'
+                        } catch (err) {
+                            echo err.getMessage()
+                            echo "Some test cases are getting Failed"
                         }
-                        bat 'node cucumber-html-report.js'
-                        bat 'node multiple-cucumber-html-report.js'
                     }
+                    bat 'node utilities/cucumber-html-report.js'
+                    bat 'node utilities/multiple-cucumber-html-report.js'
                 }
             }
         }
 
         stage('PUBLISH CUCUMBER REPORT') {
-            steps {
-                script {
-                    // Cucumber reports generate karne ke liye plugin ka istemal karo
-                    cucumber([
-                        fileIncludePattern: '3pl_cypress/cypress/cucumber-json/**/*.json'
-                    ])
-
-                    // Failed scenarios ke screenshots ka path
-                    def screenshotsPath = 'cypress/screenshots'
-
-                    // Cucumber JSON files ka directory
-                    def cucumberJsonDir = '3pl_cypress/cypress/cucumber-json'
-
-                    // Get list of failed scenarios
-                    def failedScenarios = findFailedScenarios(cucumberJsonDir)
-
-                    // Copy screenshots of failed scenarios to cucumber reports directory
-                    failedScenarios.each { scenario ->
-                        def screenshotFile = "${screenshotsPath}/${scenario}.png"
-                        if (fileExists(screenshotFile)) {
-                            def targetDir = "${cucumberJsonDir}/${scenario}"
-                            sh "mkdir -p ${targetDir}"
-                            sh "cp ${screenshotFile} ${targetDir}"
-                        }
-                    }
-                }
-            }
+    steps {
+        script {
+            cucumber([
+                fileIncludePattern: '3pl_cypress/cypress/cucumber-json/**/*.json'
+            ])
         }
     }
+}
+
+  }
+    
 
     post {
-        always {
-            script {
-                def jsonFileContents = readFile(file: '3pl_cypress/reports/cucumber_report.html.json')
-                def jsonFile = new groovy.json.JsonSlurper().parseText(jsonFileContents)
+    always {
+        script {
+            def jsonFileContents = readFile(file: '3pl_cypress/reports/cucumber_report.html.json')
+            def jsonFile = new groovy.json.JsonSlurper().parseText(jsonFileContents)
 
-                def passedScenarios = 0
-                def failedScenarios = 0
-                def skippedScenarios = 0
+            def passedScenarios = 0
+            def failedScenarios = 0
+            def skippedScenarios = 0
 
-                jsonFile.each { feature ->
-                    feature.elements.each { scenario ->
-                        def status = "passed"
-                        scenario.steps.each { step ->
-                            switch (step.result.status) {
-                                case "failed":
-                                    status = "failed"
-                                    break
-                                case "skipped":
-                                    if (status != "failed") {
-                                        status = "skipped"
-                                    }
-                                    break
-                            }
-                        }
-                        switch (status) {
-                            case "passed":
-                                passedScenarios++
+            jsonFile.each { feature ->
+                feature.elements.each { scenario ->
+                    def status = "passed"
+                    scenario.steps.each { step ->
+                        switch (step.result.status) {
+                            case "failed":
+                                status = "failed"
                                 break
                             case "skipped":
-                                skippedScenarios++
-                                break
-                            case "failed":
-                                failedScenarios++
+                                if (status != "failed") {
+                                    status = "skipped"
+                                }
                                 break
                         }
                     }
-                }
-
-                def result = ''
-                def color = ''
-                if (failedScenarios > 0) {
-                    result = " X X X X  FAIL XXXX  *  Please check console logs and cucumber report to check the failed cases "
-                    color = 'red'
-                } else {
-                    result = " PASS !!!!!          Below flows and API are working fine on Production"
-                    color = 'green'
-                }
-
-                echo "${result}"
-
-                try {
-                    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
-                    def itemDescription = item.getDescription()
-                    def endTime = System.currentTimeMillis()
-                    def duration = endTime - startTime
-                    def durationString = String.format("%d min, %d sec",
-                            TimeUnit.MILLISECONDS.toMinutes(duration),
-                            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
-                    )
-                    def JOB_NAME = "${env.JOB_NAME}"
-                    office365ConnectorSend (
-                        webhookUrl: "${webhook_url}",
-                        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>Test Result :- ${result}  </strong></span></p>
-                                  <p><strong> Jenkins Build run by  : </strong>  ${jenkins_build_user_name}</p>
-                                  <p><strong> Execution Time : </strong>  ${durationString}</p>
-                                  <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
-                                  <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
-                                  <p><strong> List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
-                                  <p><strong> Automation Test Cases Result report : </strong>  <a href="${BUILD_URL}/execution/node/8/ws/3pl_cypress/reports/index.html">Frontend Automation Cucumber Test Result</a></p>
-                                  <p><strong> Automation Test Cases Video link for reference  : </strong>  <a href="${env.BUILD_URL}/execution/node/8/ws/3pl_cypress/cypress/videos/">Click here to check the videos</a></p>
-                                  <p><strong> Check logs :</strong>  <a href="${env.BUILD_URL}/console">Click here to check the console output logs</a></p> @automation_poc""",
-                        status: "${result}"
-                    )
-                } catch (err) {
-                    echo err.getMessage()
-                    // No need for this line: echo "Some test cases are getting Failed"
+                    switch (status) {
+                        case "passed":
+                            passedScenarios++
+                            break
+                        case "skipped":
+                            skippedScenarios++
+                            break
+                        case "failed":
+                            failedScenarios++
+                            break
+                    }
                 }
             }
+
+            def result = ''
+            def color = ''
+            if (failedScenarios > 0) {
+                result = " X X X X  FAIL XXXX  *  Please check console logs and cucumber report to check the failed cases "
+                color = 'red'
+            } else {
+                result = " PASS !!!!!          Below flows and API are working fine on Production"
+                color = 'green'
+            }
+
+            echo "${result}"
+
+            try {
+    def item = Jenkins.instance.getItemByFullName(env.JOB_NAME)
+    def itemDescription = item.getDescription()
+    def endTime = System.currentTimeMillis()
+    def duration = endTime - startTime
+    def durationString = String.format("%d min, %d sec",
+            TimeUnit.MILLISECONDS.toMinutes(duration),
+            TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+    )
+    def JOB_NAME = "${env.JOB_NAME}"
+    office365ConnectorSend (
+        webhookUrl: "${webhook_url}",
+        message: """<p><span style="color: ${color};"</span><span style="color: ${color};"><strong>Test Result :- ${result}  </strong></span></p>
+                  <p><strong> Execution Time : </strong>  ${durationString}</p>
+                  <p><strong> Jenkins build run by  : </strong>  ${jenkins_build_user_name}</p>
+                  <p><strong>Total Passed Test cases : </strong>  ${passedScenarios}</p>
+                  <p><strong>Total Failed Test cases : </strong>  *${failedScenarios}</p>
+                  <p><strong> List of flows covered by FRONTEND AUTOMATION in this build : </strong>  <a href="${jobDescription}">Frontend Automation Flow List</a></p>
+                  <p><strong> Automation Test Cases Result report : </strong>  <a href="${BUILD_URL}/execution/node/8/ws/3pl_cypress/reports/index.html">Frontend Automation Cucumber Test Result</a></p>
+                  <p><strong> Automation Test Cases Video link for reference  : </strong>  <a href="${env.BUILD_URL}/execution/node/8/ws/3pl_cypress/cypress/videos/">Click here to check the videos</a></p>
+                  <p><strong> Check logs :</strong>  <a href="${env.BUILD_URL}/console">Click here to check the console output logs</a></p> @automation_poc""",
+        status: "${result}"
+    )
+} catch (err) {
+    echo err.getMessage()
+    // No need for this line: echo "Some test cases are getting Failed"
+}
+
         }
     }
+}
 }
