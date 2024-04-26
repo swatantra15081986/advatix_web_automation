@@ -19,7 +19,7 @@ Feature: INBOUND PROCESS IN ACS 2
         Then User should get logged in successfully on ASC2 Order dashboard Page
         And Store the token number value value in variable  from the response of network call button
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: Purchase Order should get created with desired qty that should be display on modal window
         Given Client, Customer, FC, Supplier, Scheduled date, Product details
         When Click on the "Manage Purchase Order" icon from the " Receiving" option under "inventory" button from  Dashboard menu items
@@ -38,7 +38,7 @@ Feature: INBOUND PROCESS IN ACS 2
         Then PO Number should be generated and should be displayed in the open Pop up
         And  Verify the status of PO, Should be " Created"
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: Newly created Purchase Order should display in top of the list along with Approve hyperlink in Approve column
         When Close the purchase order modal window
         When Search the PO number in the PO filter button
@@ -66,7 +66,7 @@ Feature: INBOUND PROCESS IN ACS 2
         And Click on "OK" button of pop up to close pop up
         Then Status of ASN should be changed to "Arrived"
 
-    @sanity @regression
+    @sanity @regression 
     Scenario: Create containers for receiving items using APIs '/acs-shipper-services/api/v1/container/createContainer'
         Given End points for container creation, Authorization Token, warehouse location, bar code and container name
         When User creates a container by hit the container creation api
