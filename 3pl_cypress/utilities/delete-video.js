@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const folderPath = path.join(__dirname, 'cypress/videos');
+const folderPath = 'cypress/videos'
 
 // Function to delete folder recursively
 function deleteFolderRecursive(folderPath) {

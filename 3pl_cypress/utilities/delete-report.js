@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const folderPath = path.join(__dirname, 'reports');
+const folderPath = 'reports'
 
 // Function to delete folder recursively
 function deleteFolderRecursive(folderPath) {

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const filePath = path.join(__dirname, 'package-lock.json');
+const filePath = 'package-lock.json';
 
 fs.unlink(filePath, (err) => {
   if (err) {
