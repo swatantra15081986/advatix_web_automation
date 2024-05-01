@@ -7,7 +7,7 @@
     "acs2_staging": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=staging",
     "acs2_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/     --env configFile=uat",
     "inbound_acs2_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_inbound/     --env configFile=uat",
-    "setup_acs2_uatt": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_setup/     --env configFile=uat"
+    "setup_acs2_uat": "npx cypress run    --browser chrome   --spec cypress/integration/feature_acs2/feature_setup/     --env configFile=uat"
   },
   "author": "Swatantra",
   "license": "ISC",
