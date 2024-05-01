@@ -19,7 +19,7 @@ Feature Description
              Then User should get logged in successfully on ASC2 Order dashboard Page
               And Store the token number value value in variable  from the response of network call button
 
-        @sanity @regression  @focus
+        @sanity @regression
         Scenario: Purchase Order should get created with desired qty that should be display on modal window
             Given Client, Customer, FC, Supplier, Scheduled date, Product details
              When Click on the "Manage Purchase Order" icon from the " Receiving" option under "inventory" button from  Dashboard menu items
