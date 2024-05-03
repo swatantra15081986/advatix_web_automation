@@ -17,7 +17,7 @@ def redColor = 'red' // Color variable Red
 def greenColor = 'green' // Color variable Green
 def email_to = "swatantra.srivastava@advatix.com"
 def email_cc = "text@advatix.com"
-def email_bcc = "prayag.verma@advatix.com, tkhurana@advatix.com, rahulk@advatix.com, tsingh@advatix.com, bsingh@advatix.com"
+def email_bcc = "prayag.verma@advatix.com, tkhurana@advatix.com, rahulk@advatix.com, tsingh@advatix.com, bsingh@advatix.com, rsaxena@advatix.com"
 def webhook_url = "https://advatix1.webhook.office.com/webhookb2/87b0cd1f-00b1-42bc-8600-c7428f884919@42ece415-7f11-4b12-ad5d-a5b2a9a75839/JenkinsCI/c0f01557dd7f4012a9efeb7be7a90480/ca2853c7-42f9-477d-b599-0082b5ae0e3c"
 pipeline {
     options {
