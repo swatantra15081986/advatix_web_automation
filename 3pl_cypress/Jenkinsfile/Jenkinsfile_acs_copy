@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets
 def jenkinsUrl = env.JENKINS_URL
 echo "${jenkinsUrl}"
 def cause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+def jenkins_build_user_name = cause.userName
 def get_email_for_user_id(user_id) {
     def user = hudson.model.User.get(user_id)
     return user.getProperty(hudson.tasks.Mailer.UserProperty).getAddress()
