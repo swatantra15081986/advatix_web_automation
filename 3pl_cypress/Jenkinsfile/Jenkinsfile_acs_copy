@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets
 def jenkinsUrl = env.JENKINS_URL
 echo "${jenkinsUrl}"
 def cause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+echo "userName: ${cause.userName}"
+def jenkins_build_user_name = cause.userName
 def jenkins_build_user_name = cause.userName
 def get_email_for_user_id(user_id) {
     def user = hudson.model.User.get(user_id)
@@ -17,7 +19,6 @@ println "build_user_id: ${build_user_id}"
 println "build_user_email: ${jenkins_build_user_email}"
 echo "userName: ${cause.userName}"
 echo "jenkins_build_user_email: ${jenkins_build_user_email}"
-def jenkins_build_user_name = cause.userName
 def jobUrl = env.JOB_URL
 def jobName = env.JOB_NAME
 println "jenkinsUrl: ${jenkinsUrl}"
