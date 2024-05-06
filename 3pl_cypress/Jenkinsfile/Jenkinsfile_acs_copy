@@ -7,12 +7,13 @@ echo "${jenkinsUrl}"
 def cause = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
 echo "userName: ${cause.userName}"
 def jenkins_build_user_name = cause.userName
+def build_user_id = currentBuild.rawBuild.getCauses()[0].getUserId()
 def get_email_for_user_id(user_id) {
     def user = hudson.model.User.get(user_id)
     return user.getProperty(hudson.tasks.Mailer.UserProperty).getAddress()
 }
 def jenkins_build_user_email // Declare variable here
-if (build_user_id == null || build_user_id.trim() == '') {
+if (cause.userName instanceof List && cause.userName.isEmpty()) {
     jenkins_build_user_email = 'timer@advatix.com'
 } else {
     jenkins_build_user_email = get_email_for_user_id(build_user_id)
