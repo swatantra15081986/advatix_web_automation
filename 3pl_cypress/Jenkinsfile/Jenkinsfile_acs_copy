@@ -11,8 +11,12 @@ def get_email_for_user_id(user_id) {
     def user = hudson.model.User.get(user_id)
     return user.getProperty(hudson.tasks.Mailer.UserProperty).getAddress()
 }
-def build_user_id = currentBuild.rawBuild.getCauses()[0].getUserId()
-def jenkins_build_user_email = get_email_for_user_id(build_user_id)
+def jenkins_build_user_email // Declare variable here
+if (build_user_id == null || build_user_id.trim() == '') {
+    jenkins_build_user_email = 'timer@advatix.com'
+} else {
+    jenkins_build_user_email = get_email_for_user_id(build_user_id)
+}
 println "userid: ${jenkins_build_user_name}"
 println "build_user_id: ${build_user_id}"
 println "build_user_email: ${jenkins_build_user_email}"
