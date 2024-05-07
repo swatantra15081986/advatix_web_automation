@@ -91,7 +91,7 @@ pipeline {
 
     post {
     always {
-        archiveArtifacts 'cypress/screenshots/**'
+        archiveArtifacts '3pl_cypress/cypress/screenshots/'
         script {
             def jsonFileContents = readFile(file: '3pl_cypress/reports/cucumber_report.html.json')
             def jsonFile = new groovy.json.JsonSlurper().parseText(jsonFileContents)
