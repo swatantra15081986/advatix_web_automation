@@ -214,6 +214,18 @@ Cypress.Commands.add("verify_button_visible", (selector) => {
     selector.should('be.enabled')
 })
 
+Cypress.Commands.add("extract_custom_tiles_value", (selector) => {
+    const messages = []
+    cy.contains(selector).each(($el, index, $list) => {
+        const message = $el.text();
+        cy.log(message);
+        messages.push(message);
+    }).then(() => {
+        // Once all messages are collected, resolve with the array
+        return messages;
+    })
+})
+
 
 
 
