@@ -214,6 +214,28 @@ Cypress.Commands.add("verify_button_visible", (selector) => {
     selector.should('be.enabled')
 })
 
+Cypress.Commands.add("extract_custom_tiles_value", (selector) => {
+    const messages = []
+    cy.contains(selector).each(($el, index, $list) => {
+        const message = $el.text();
+        cy.log(message);
+        messages.push(message);
+    }).then(() => {
+        // Once all messages are collected, resolve with the array
+        return messages;
+    })
+})
+
+Cypress.Commands.add('split_string', (message, remove_prefix) => {
+    // Split the string and extract the order number
+    var message_value = message.toString()
+    const prefix_to_remove = remove_prefix
+    const start_index = message_value.indexOf(prefix_to_remove) + prefix_to_remove.length;
+  const trimmed_string = message_value.substring(start_index).trim();
+    // Return the trimmed order number
+  return cy.wrap(trimmed_string);
+  })
+
 
 
 
