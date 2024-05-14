@@ -261,6 +261,7 @@ Given('Receiver app user Credentials', () => {
     app_user_name = env_acs2_data.api_app_user_name
     app_user_password = env_acs2_data.api_app_password
     device_type = "Android"
+    ver = "1.0"
 })
 
 When('Receiver user  hit the login Mobile app API by valid credentials', () => {
